@@ -18,7 +18,7 @@ namespace CavemanRunner
         }
 
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        public SpriteBatch spriteBatch;
         GameComponentCollection scrollables;
         Player player;
         GameState gameState;
@@ -75,7 +75,11 @@ namespace CavemanRunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // TODO: Add your update logic here
+            Components.GetEnumerator().Reset();
+            while(Components.GetEnumerator().MoveNext())
+            {
+                ((GameObject)Components.GetEnumerator().Current).Update(gameTime);
+            }
 
             base.Update(gameTime);
         }
@@ -88,7 +92,11 @@ namespace CavemanRunner
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            Components.GetEnumerator().Reset();
+            while (Components.GetEnumerator().MoveNext())
+            {
+                ((GameObject)Components.GetEnumerator().Current).Draw(gameTime);
+            }
 
             base.Draw(gameTime);
         }
