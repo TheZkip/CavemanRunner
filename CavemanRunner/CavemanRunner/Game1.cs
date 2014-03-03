@@ -6,12 +6,27 @@ namespace CavemanRunner
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game1 : Game
+    public class CavemanRunner : Game
     {
+        public enum GameState
+        {
+            Menu = 0,
+            InGame,
+            Paused,
+            EndRun,
+            PreRun
+        }
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        GameComponentCollection scrollables;
+        Player player;
+        GameState gameState;
+        int score;
+        float distance;
 
-        public Game1()
+
+        public CavemanRunner()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -26,6 +41,8 @@ namespace CavemanRunner
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            player = new Player();
+            scrollables = new GameComponentCollection();
 
             base.Initialize();
         }
