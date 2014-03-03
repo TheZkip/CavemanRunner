@@ -1,0 +1,23 @@
+﻿<xapCache source="C:\Users\Kimmo\Documents\MonoGame Projects\Caveman Runner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\CavemanRunner_Debug_ARM.xap" wasSigned="False" wasTritonized="False" certificateThumbprint="" TimeStampUrl="" signKeyFile="" signKeyPassword="" lastWriteTime="3.3.2014 11:58:28">
+  <file source="C:\Users\Kimmo\Documents\MonoGame Projects\Caveman Runner\CavemanRunner\CavemanRunner\obj\ARM\Debug\CavemanRunner.dll" archivePath="CavemanRunner.dll" lastWriteTime="3.3.2014 11:58:25" />
+  <file source="C:\Users\Kimmo\Documents\MonoGame Projects\Caveman Runner\CavemanRunner\CavemanRunner\Assets\AlignmentGrid.png" archivePath="Assets\AlignmentGrid.png" lastWriteTime="3.3.2014 11:05:44" />
+  <file source="C:\Users\Kimmo\Documents\MonoGame Projects\Caveman Runner\CavemanRunner\CavemanRunner\Assets\Tiles\FlipCycleTileLarge.png" archivePath="Assets\Tiles\FlipCycleTileLarge.png" lastWriteTime="3.3.2014 11:05:46" />
+  <file source="C:\Users\Kimmo\Documents\MonoGame Projects\Caveman Runner\CavemanRunner\CavemanRunner\Assets\Tiles\FlipCycleTileSmall.png" archivePath="Assets\Tiles\FlipCycleTileSmall.png" lastWriteTime="3.3.2014 11:05:46" />
+  <file source="C:\Users\Kimmo\Documents\MonoGame Projects\Caveman Runner\CavemanRunner\CavemanRunner\Assets\Tiles\IconicTileMediumLarge.png" archivePath="Assets\Tiles\IconicTileMediumLarge.png" lastWriteTime="3.3.2014 11:05:46" />
+  <file source="C:\Users\Kimmo\Documents\MonoGame Projects\Caveman Runner\CavemanRunner\CavemanRunner\Assets\Tiles\IconicTileSmall.png" archivePath="Assets\Tiles\IconicTileSmall.png" lastWriteTime="3.3.2014 11:05:46" />
+  <file source="C:\Users\Kimmo\Documents\MonoGame Projects\Caveman Runner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\AppManifest.xaml" archivePath="AppManifest.xaml" lastWriteTime="3.3.2014 11:58:26" />
+  <file source="C:\Users\Kimmo\Documents\MonoGame Projects\Caveman Runner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\Assets\ApplicationIcon.png" archivePath="Assets\ApplicationIcon.png" lastWriteTime="3.3.2014 11:05:46" />
+  <file source="C:\Users\Kimmo\Documents\MonoGame Projects\Caveman Runner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\Assets\Tiles\FlipCycleTileMedium.png" archivePath="Assets\Tiles\FlipCycleTileMedium.png" lastWriteTime="3.3.2014 11:05:46" />
+  <file source="C:\Program Files (x86)\MonoGame\MonoGame.Framework\bin\WindowsPhone\ARM\Debug\MonoGame.Framework.dll" archivePath="MonoGame.Framework.dll" lastWriteTime="3.3.2014 11:45:44" />
+  <file source="C:\Program Files (x86)\MonoGame\MonoGame.Framework\bin\WindowsPhone\ARM\Debug\SharpDX.dll" archivePath="SharpDX.dll" lastWriteTime="10.8.2013 2:14:14" />
+  <file source="C:\Program Files (x86)\MonoGame\MonoGame.Framework\bin\WindowsPhone\ARM\Debug\SharpDX.Direct3D11.dll" archivePath="SharpDX.Direct3D11.dll" lastWriteTime="10.8.2013 2:14:17" />
+  <file source="C:\Program Files (x86)\MonoGame\MonoGame.Framework\bin\WindowsPhone\ARM\Debug\SharpDX.XAudio2.dll" archivePath="SharpDX.XAudio2.dll" lastWriteTime="10.8.2013 2:14:21" />
+  <file source="C:\Program Files (x86)\MonoGame\MonoGame.Framework\bin\WindowsPhone\ARM\Debug\SharpDX.DXGI.dll" archivePath="SharpDX.DXGI.dll" lastWriteTime="10.8.2013 2:14:15" />
+  <file source="C:\Program Files (x86)\MonoGame\MonoGame.Framework\bin\WindowsPhone\ARM\Debug\SharpDX.WP8.winmd" archivePath="SharpDX.WP8.winmd" lastWriteTime="10.8.2013 2:14:11" />
+  <file source="C:\Program Files (x86)\MonoGame\MonoGame.Framework\bin\WindowsPhone\ARM\Debug\SharpDX.xml" archivePath="SharpDX.xml" lastWriteTime="10.8.2013 2:14:13" />
+  <file source="C:\Program Files (x86)\MonoGame\MonoGame.Framework\bin\WindowsPhone\ARM\Debug\SharpDX.Direct3D11.xml" archivePath="SharpDX.Direct3D11.xml" lastWriteTime="10.8.2013 2:14:17" />
+  <file source="C:\Program Files (x86)\MonoGame\MonoGame.Framework\bin\WindowsPhone\ARM\Debug\SharpDX.XAudio2.xml" archivePath="SharpDX.XAudio2.xml" lastWriteTime="10.8.2013 2:14:21" />
+  <file source="C:\Program Files (x86)\MonoGame\MonoGame.Framework\bin\WindowsPhone\ARM\Debug\SharpDX.DXGI.xml" archivePath="SharpDX.DXGI.xml" lastWriteTime="10.8.2013 2:14:15" />
+  <file source="C:\Program Files (x86)\MonoGame\MonoGame.Framework\bin\WindowsPhone\ARM\Debug\SharpDX.WP8.dll" archivePath="SharpDX.WP8.dll" lastWriteTime="10.8.2013 2:14:11" />
+  <file source="C:\Users\Kimmo\Documents\MonoGame Projects\Caveman Runner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\Properties\WMAppManifest.xml" archivePath="WMAppManifest.xml" lastWriteTime="3.3.2014 11:58:27" />
+</xapCache>
