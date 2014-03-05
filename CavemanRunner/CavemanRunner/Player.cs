@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace CavemanRunner
 {
@@ -11,11 +12,16 @@ namespace CavemanRunner
         float health;
         bool isSwinging;
 
+        public Player(CavemanRunner game, Texture2D texture, Vector2 position)
+            : base(game, texture, position)
+        {
+
+        }
+
         public float Health { get { return health; } set { health = value; } }
 
         public override void Initialize()
         {
-
             base.Initialize();
         }
         public override void Update(GameTime gameTime)

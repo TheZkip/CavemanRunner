@@ -16,6 +16,12 @@ namespace CavemanRunner
             set { isDestructible = value; }
         }
 
+        public Obstacle(CavemanRunner game, Texture2D texture, Vector2 position)
+            : base(game, texture, position)
+        {
+
+        }
+
         public override void Initialize()
         {
 

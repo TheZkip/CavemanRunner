@@ -30,3 +30,39 @@ C:\Users\Kimmo\Documents\MonoGame Projects\Caveman Runner\CavemanRunner\CavemanR
 C:\Users\Kimmo\Documents\MonoGame Projects\Caveman Runner\CavemanRunner\CavemanRunner\obj\ARM\Debug\CavemanRunner.dll
 C:\Users\Kimmo\Documents\MonoGame Projects\Caveman Runner\CavemanRunner\CavemanRunner\obj\ARM\Debug\CavemanRunner.pdb
 C:\Users\Kimmo\Documents\MonoGame Projects\Caveman Runner\CavemanRunner\CavemanRunner\obj\ARM\Debug\XapCacheFile.xml
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\obj\ARM\Debug\CavemanRunner.csprojResolveAssemblyReference.cache
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\obj\ARM\Debug\App.g.cs
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\obj\ARM\Debug\GamePage.g.cs
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\obj\ARM\Debug\CavemanRunner.g.resources
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\obj\ARM\Debug\CavemanRunner.Resources.AppResources.resources
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\obj\ARM\Debug\CavemanRunner.csproj.GenerateResource.Cache
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\obj\ARM\Debug\CavemanRunner.dll
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\obj\ARM\Debug\CavemanRunner.pdb
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\Assets\ApplicationIcon.png
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\Assets\Tiles\FlipCycleTileLarge.png
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\Assets\Tiles\FlipCycleTileMedium.png
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\Assets\Tiles\FlipCycleTileSmall.png
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\Assets\Tiles\IconicTileMediumLarge.png
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\Assets\Tiles\IconicTileSmall.png
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\Content\Fonts\font.xnb
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\Content\Graphics\caveman.xnb
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\Content\Graphics\dino.xnb
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\Content\Graphics\groundtile.xnb
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\CavemanRunner.dll
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\CavemanRunner.pdb
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\AppManifest.xaml
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\Properties\WMAppManifest.xml
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\CavemanRunner_Debug_ARM.xap
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\MonoGame.Framework.dll
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\SharpDX.dll
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\SharpDX.Direct3D11.dll
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\SharpDX.XAudio2.dll
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\SharpDX.DXGI.dll
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\SharpDX.WP8.winmd
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\MonoGame.Framework.pdb
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\SharpDX.xml
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\SharpDX.Direct3D11.xml
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\SharpDX.XAudio2.xml
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\SharpDX.DXGI.xml
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\SharpDX.WP8.dll
+C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\obj\ARM\Debug\XapCacheFile.xml
