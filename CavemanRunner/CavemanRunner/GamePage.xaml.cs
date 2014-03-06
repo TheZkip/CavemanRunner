@@ -8,6 +8,7 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input.Touch;
 using MonoGame.Framework.WindowsPhone;
 using CavemanRunner.Resources;
 
@@ -15,33 +16,26 @@ namespace CavemanRunner
 {
     public partial class GamePage : PhoneApplicationPage
     {
-        private Game1 _game;
+        private CavemanRunner _game;
 
         // Constructor
         public GamePage()
         {
             InitializeComponent();
 
-            _game = XamlGame<Game1>.Create("", this);
+            _game = XamlGame<CavemanRunner>.Create("", this);
 
             // Sample code to localize the ApplicationBar
             //BuildLocalizedApplicationBar();
         }
 
-        // Sample code for building a localized ApplicationBar
-        //private void BuildLocalizedApplicationBar()
-        //{
-        //    // Set the page's ApplicationBar to a new instance of ApplicationBar.
-        //    ApplicationBar = new ApplicationBar();
+        private void CavemanRunner_ManipulationStarted(object sender, System.Windows.Input.ManipulationStartedEventArgs e)
+        {
+            TouchCollection touches = TouchPanel.GetState();
+            _game.touches = touches;
 
-        //    // Create a new button and set the text value to the localized string from AppResources.
-        //    ApplicationBarIconButton appBarButton = new ApplicationBarIconButton(new Uri("/Assets/AppBar/appbar.add.rest.png", UriKind.Relative));
-        //    appBarButton.Text = AppResources.AppBarButtonText;
-        //    ApplicationBar.Buttons.Add(appBarButton);
-
-        //    // Create a new menu item with the localized string from AppResources.
-        //    ApplicationBarMenuItem appBarMenuItem = new ApplicationBarMenuItem(AppResources.AppBarMenuItemText);
-        //    ApplicationBar.MenuItems.Add(appBarMenuItem);
-        //}
+            if (touches.Count == 2)
+                _game.jumpDoubleTap = true;
+        }
     }
 }

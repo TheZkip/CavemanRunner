@@ -30,9 +30,9 @@ namespace CavemanRunner
             base.Draw(gameTime);
         }
 
-        void Jump ()
+        public void Jump ()
         {
-
+            physics.ApplyForce(Vector2.UnitY * jumpStrength);
         }
 
         void StartSwinging ()

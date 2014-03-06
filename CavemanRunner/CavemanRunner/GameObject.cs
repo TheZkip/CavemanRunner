@@ -9,9 +9,9 @@ namespace CavemanRunner
     class GameObject : DrawableGameComponent
     {
         // private fields
-        Renderer renderer;
-        Physics physics;
-        Transform transform;
+        protected Renderer renderer;
+        protected Physics physics;
+        protected Transform transform;
 
         public override void Initialize()
         {

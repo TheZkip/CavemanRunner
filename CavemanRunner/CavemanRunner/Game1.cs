@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input.Touch;
 
 namespace CavemanRunner
 {
@@ -20,6 +21,8 @@ namespace CavemanRunner
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         GameComponentCollection scrollables;
+        public TouchCollection touches;
+        public bool jumpDoubleTap;
         Player player;
         GameState gameState;
         int score;
@@ -76,6 +79,12 @@ namespace CavemanRunner
         protected override void Update(GameTime gameTime)
         {
             // TODO: Add your update logic here
+            // jump on two finger tap
+            if (jumpDoubleTap)
+            {
+                player.Jump();
+                jumpDoubleTap = false;
+            }
 
             base.Update(gameTime);
         }
