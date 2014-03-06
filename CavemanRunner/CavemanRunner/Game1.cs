@@ -19,15 +19,15 @@ namespace CavemanRunner
         }
 
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        GameComponentCollection scrollables;
+        public SpriteBatch spriteBatch;
         public TouchCollection touches;
         public bool jumpDoubleTap;
         Player player;
         GameState gameState;
         int score;
         float distance;
-
+        Texture2D platformTexture, playerTexture;
+        GameObject platformTile;
 
         public CavemanRunner()
         {
@@ -43,10 +43,6 @@ namespace CavemanRunner
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-            player = new Player();
-            scrollables = new GameComponentCollection();
-
             base.Initialize();
         }
 
@@ -58,8 +54,9 @@ namespace CavemanRunner
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
+            player = new Player(this, Content.Load<Texture2D>("Graphics/caveman"), new Vector2(100, 100));
+            platformTile = new GameObject(this, Content.Load<Texture2D>("Graphics/groundtile"), new Vector2(100, 100));
+            Components.Add(player);
         }
 
         /// <summary>
@@ -78,7 +75,10 @@ namespace CavemanRunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // TODO: Add your update logic here
+            foreach(GameObject o in Components)
+            {
+                o.Update(gameTime);
+            }
             // jump on two finger tap
             if (jumpDoubleTap)
             {
@@ -97,7 +97,10 @@ namespace CavemanRunner
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            foreach (GameObject o in Components)
+            {
+                o.Draw(gameTime);
+            }
 
             base.Draw(gameTime);
         }

@@ -8,7 +8,8 @@ namespace CavemanRunner
 {
     class Renderer
     {
-        Texture2D texture;
+        public Texture2D Texture { get; set; }
+
         Dictionary<string, Animation> animations;
         bool isAnimating;
         bool animateAlways;

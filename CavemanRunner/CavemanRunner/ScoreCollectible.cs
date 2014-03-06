@@ -11,6 +11,12 @@ namespace CavemanRunner
         int value;
         public int Value { get { return this.value; } set { this.value = value; } }
 
+        public ScoreCollectible(CavemanRunner game, Texture2D texture, Vector2 position)
+            : base(game, texture, position)
+        {
+
+        }
+
         public void Do ()
         {
 

@@ -8,6 +8,12 @@ namespace CavemanRunner
 {
     class Platform : GameObject
     {
+        public Platform(CavemanRunner game, Texture2D texture, Vector2 position)
+            : base(game, texture, position)
+        {
+
+        }
+
         public override void Initialize()
         {
 

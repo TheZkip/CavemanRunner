@@ -213,3 +213,5 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+/CavemanRunner/CavemanRunner/obj
+/CavemanRunner/CavemanRunner/bin
