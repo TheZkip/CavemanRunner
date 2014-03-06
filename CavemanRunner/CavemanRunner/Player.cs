@@ -6,10 +6,11 @@ namespace CavemanRunner
 {
     class Player : GameObject
     {
-        float jumpThreshold;
-        float jumpStrength;
-        float health;
-        bool isSwinging;
+        //float jumpThreshold;
+        float jumpStrength = 0f;
+        float health = 0f;
+        bool isSpecialInUse = false;
+        bool isGrounded = false;
 
         public float Health { get { return health; } set { health = value; } }
 
@@ -20,6 +21,10 @@ namespace CavemanRunner
         }
         public override void Update(GameTime gameTime)
         {
+            if (isSpecialInUse)
+            {
+
+            }
 
             base.Update(gameTime);
         }
@@ -32,19 +37,19 @@ namespace CavemanRunner
 
         public void Jump ()
         {
-            physics.ApplyForce(Vector2.UnitY * jumpStrength);
+            physics.AddForce(Vector2.UnitY * jumpStrength);
         }
 
-        void StartSwinging ()
+        void StartSpecial ()
         {
             // TODO: change animation
-            isSwinging = true;
+            isSpecialInUse = true;
         }
 
-        void StopSwinging ()
+        void StopSpecial ()
         {
             // TODO: change animation
-            isSwinging = false;
+            isSpecialInUse = false;
         }
     }
 }
