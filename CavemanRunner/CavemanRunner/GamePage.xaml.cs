@@ -35,7 +35,10 @@ namespace CavemanRunner
             _game.touches = touches;
 
             if (touches.Count == 2)
+            {
                 _game.jumpDoubleTap = true;
+                e.Complete();
+            }
         }
     }
 }

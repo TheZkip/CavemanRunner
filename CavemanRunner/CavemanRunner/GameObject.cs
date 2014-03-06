@@ -28,7 +28,7 @@ namespace CavemanRunner
             transform.Position = position;
         }
 
-        public GameObject(CavemanRunner game, Texture2D texture, Vector2 position, bool isStatic)
+        public GameObject(CavemanRunner game, Texture2D texture, Vector2 position, Vector2 velocity, int mass, bool isStatic = false)
             : base(game)
         {
             spriteBatch = game.spriteBatch;
@@ -36,24 +36,7 @@ namespace CavemanRunner
             renderer = new Renderer();
             renderer.Texture = texture;
 
-            transform = new Transform();
-            transform.Position = position;
-
-            physics = new Physics();
-            physics.IsStatic = isStatic;
-            physics.Velocity = new Vector2(- game.tempo / 100, 0);
-        }
-
-        public GameObject(CavemanRunner game, Texture2D texture, Vector2 position, Vector2 velocity)
-            : base(game)
-        {
-            spriteBatch = game.spriteBatch;
-
-            renderer = new Renderer();
-            renderer.Texture = texture;
-
-            physics = new Physics();
-            physics.Velocity = velocity;
+            physics = new Physics(mass, isStatic, velocity);
 
             transform = new Transform();
             transform.Position = position;

@@ -55,9 +55,9 @@ namespace CavemanRunner
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            player = new Player(this, Content.Load<Texture2D>("Graphics/caveman"), new Vector2(100, 100));
+            player = new Player(this, Content.Load<Texture2D>("Graphics/caveman"), new Vector2(100, 100), new Vector2(0, 0), 100);
             platformTile = new Platform(this, Content.Load<Texture2D>("Graphics/groundtile"),
-                new Vector2(GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 200));
+                new Vector2(GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 200), 100);
         }
 
         /// <summary>

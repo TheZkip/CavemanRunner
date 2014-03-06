@@ -8,7 +8,7 @@ namespace CavemanRunner
 {
     class Physics
     {
-        public static float Gravity = -9.81f;
+        public static float Gravity = 9.81f;
         public static float DefaultMass = 1f;
 
         float mass;
@@ -34,7 +34,15 @@ namespace CavemanRunner
             velocity = new Vector2(0f, 0f);
             collider = new Rectangle();
         }
-        GameObject parent;
+
+        public Physics(float mass, bool isStatic, Vector2 velocity)
+        {
+            this.mass = mass;
+            this.isStatic = isStatic;
+            forcesToApply = new List<Vector2>();
+            this.Velocity = velocity;
+            collider = new Rectangle();
+        }
 
         public float Mass { get { return mass; } set { mass = value; } }
         public Vector2 Velocity { get { return velocity; } set { velocity = value; } }
@@ -45,7 +53,6 @@ namespace CavemanRunner
         {
             velocity.X += (force.X / mass) * gameTime.ElapsedGameTime.Milliseconds * 0.001f;
             velocity.Y += (force.Y / mass) * gameTime.ElapsedGameTime.Milliseconds * 0.001f;
-            velocity = new Vector2(0, 0);
         }
 
         public void AddForce (Vector2 force)

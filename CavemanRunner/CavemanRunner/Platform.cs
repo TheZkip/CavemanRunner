@@ -8,8 +8,8 @@ namespace CavemanRunner
 {
     class Platform : GameObject
     {
-        public Platform(CavemanRunner game, Texture2D texture, Vector2 position)
-            : base(game, texture, position, true)
+        public Platform(CavemanRunner game, Texture2D texture, Vector2 position, int mass)
+            : base(game, texture, position, new Vector2(-(float)game.tempo / 100, 0), mass, true)
         {
             game.Components.Add(this);
         }
