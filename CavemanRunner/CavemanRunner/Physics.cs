@@ -8,7 +8,7 @@ namespace CavemanRunner
 {
     class Physics
     {
-        public static float Gravity = -9.81f;
+        public static float Gravity = 9.81f;
         public static float DefaultMass = 1f;
 
         float mass;
@@ -32,6 +32,15 @@ namespace CavemanRunner
             this.isStatic = isStatic;
             forcesToApply = new List<Vector2>();
             velocity = new Vector2(0f, 0f);
+            collider = new Rectangle();
+        }
+
+        public Physics(float mass, bool isStatic, Vector2 velocity)
+        {
+            this.mass = mass;
+            this.isStatic = isStatic;
+            forcesToApply = new List<Vector2>();
+            this.Velocity = velocity;
             collider = new Rectangle();
         }
 

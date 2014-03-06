@@ -8,15 +8,15 @@ namespace CavemanRunner
     class Player : GameObject
     {
         //float jumpThreshold;
-        float jumpStrength = 0f;
+        float jumpStrength = 10000f;
         float health = 0f;
         bool isSpecialInUse = false;
         bool isGrounded = false;
 
-        public Player(CavemanRunner game, Texture2D texture, Vector2 position)
-            : base(game, texture, position)
+        public Player(CavemanRunner game, Texture2D texture, Vector2 position, Vector2 velocity, int mass)
+            : base(game, texture, position, velocity, mass)
         {
-
+            game.Components.Add(this);
         }
 
         public float Health { get { return health; } set { health = value; } }
@@ -43,7 +43,7 @@ namespace CavemanRunner
 
         public void Jump ()
         {
-            physics.AddForce(Vector2.UnitY * jumpStrength);
+            physics.AddForce(Vector2.UnitY * -jumpStrength);
         }
 
         void StartSpecial ()
