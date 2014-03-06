@@ -16,7 +16,7 @@ namespace CavemanRunner
         public Player(CavemanRunner game, Texture2D texture, Vector2 position)
             : base(game, texture, position)
         {
-
+            game.Components.Add(this);
         }
 
         public float Health { get { return health; } set { health = value; } }

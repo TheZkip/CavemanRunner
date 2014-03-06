@@ -25,6 +25,7 @@ namespace CavemanRunner
         Player player;
         GameState gameState;
         int score;
+        public int tempo = 20;
         float distance;
         Texture2D platformTexture, playerTexture;
         GameObject platformTile;
@@ -55,8 +56,8 @@ namespace CavemanRunner
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             player = new Player(this, Content.Load<Texture2D>("Graphics/caveman"), new Vector2(100, 100));
-            platformTile = new GameObject(this, Content.Load<Texture2D>("Graphics/groundtile"), new Vector2(100, 100));
-            Components.Add(player);
+            platformTile = new Platform(this, Content.Load<Texture2D>("Graphics/groundtile"),
+                new Vector2(GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 200));
         }
 
         /// <summary>

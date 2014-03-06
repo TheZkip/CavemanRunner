@@ -213,5 +213,13 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+<<<<<<< HEAD
 /CavemanRunner/CavemanRunner/obj
 /CavemanRunner/CavemanRunner/bin
+=======
+*.suo
+*.dll
+*.pdb
+*.xap
+*.xml
+>>>>>>> origin/juhvo's-implementations
