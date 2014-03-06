@@ -10,7 +10,7 @@ namespace CavemanRunner
     {
         // private fields
         Renderer renderer;
-        Physics physics;
+        protected Physics physics;
         Transform transform;
         SpriteBatch spriteBatch;
 
@@ -28,6 +28,37 @@ namespace CavemanRunner
             transform.Position = position;
         }
 
+        public GameObject(CavemanRunner game, Texture2D texture, Vector2 position, bool isStatic)
+            : base(game)
+        {
+            spriteBatch = game.spriteBatch;
+
+            renderer = new Renderer();
+            renderer.Texture = texture;
+
+            transform = new Transform();
+            transform.Position = position;
+
+            physics = new Physics();
+            physics.IsStatic = isStatic;
+            physics.Velocity = new Vector2(- game.tempo / 100, 0);
+        }
+
+        public GameObject(CavemanRunner game, Texture2D texture, Vector2 position, Vector2 velocity)
+            : base(game)
+        {
+            spriteBatch = game.spriteBatch;
+
+            renderer = new Renderer();
+            renderer.Texture = texture;
+
+            physics = new Physics();
+            physics.Velocity = velocity;
+
+            transform = new Transform();
+            transform.Position = position;
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -39,7 +70,6 @@ namespace CavemanRunner
                 physics.Update(gameTime);
 
             // update transform
-            transform.Position += physics.Velocity;
             transform.Position += physics.Velocity;
 
             base.Update(gameTime);

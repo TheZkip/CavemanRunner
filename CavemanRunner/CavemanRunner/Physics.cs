@@ -15,6 +15,7 @@ namespace CavemanRunner
         Rectangle collider;
         bool isStatic;
         float lastUpdate = 0f;
+        GameObject parent;
 
         public Vector2 Velocity { get { return velocity; } set { velocity = value; } }
         public float Mass { get { return mass; } set { mass = value; } }
@@ -23,7 +24,7 @@ namespace CavemanRunner
 
         public Physics()
         {
-            velocity = new Vector2();
+            velocity = new Vector2(0, 0);
         }
 
         public void ApplyForce (Vector2 force, GameTime gameTime)
@@ -36,9 +37,13 @@ namespace CavemanRunner
         {
             // apply gravity
             if (isStatic)
-                return;
+            {
+
+            }
             else
+            {
                 ApplyForce(new Vector2(0f, Gravity), gameTime);
+            }
         }
     }
 }

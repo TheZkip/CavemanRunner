@@ -1,9 +1,9 @@
-﻿<xapCache source="C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\CavemanRunner_Debug_ARM.xap" wasSigned="False" wasTritonized="False" certificateThumbprint="" TimeStampUrl="" signKeyFile="" signKeyPassword="" lastWriteTime="6.3.2014 12:21:11">
-  <file source="C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\obj\ARM\Debug\CavemanRunner.dll" archivePath="CavemanRunner.dll" lastWriteTime="6.3.2014 12:21:08" />
-  <file source="C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\Content\Fonts\font.xnb" archivePath="Content\Fonts\font.xnb" lastWriteTime="5.3.2014 15:15:13" />
-  <file source="C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\Content\Graphics\caveman.xnb" archivePath="Content\Graphics\caveman.xnb" lastWriteTime="5.3.2014 15:15:13" />
-  <file source="C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\Content\Graphics\dino.xnb" archivePath="Content\Graphics\dino.xnb" lastWriteTime="5.3.2014 15:15:13" />
-  <file source="C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\Content\Graphics\groundtile.xnb" archivePath="Content\Graphics\groundtile.xnb" lastWriteTime="5.3.2014 15:15:13" />
+﻿<xapCache source="C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\bin\WindowsPhone\ARM\Debug\CavemanRunner_Debug_ARM.xap" wasSigned="False" wasTritonized="False" certificateThumbprint="" TimeStampUrl="" signKeyFile="" signKeyPassword="" lastWriteTime="6.3.2014 16:09:26">
+  <file source="C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\obj\ARM\Debug\CavemanRunner.dll" archivePath="CavemanRunner.dll" lastWriteTime="6.3.2014 16:09:24" />
+  <file source="C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\Content\Fonts\font.xnb" archivePath="Content\Fonts\font.xnb" lastWriteTime="6.3.2014 13:40:26" />
+  <file source="C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\Content\Graphics\caveman.xnb" archivePath="Content\Graphics\caveman.xnb" lastWriteTime="6.3.2014 13:40:26" />
+  <file source="C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\Content\Graphics\dino.xnb" archivePath="Content\Graphics\dino.xnb" lastWriteTime="6.3.2014 13:40:26" />
+  <file source="C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\Content\Graphics\groundtile.xnb" archivePath="Content\Graphics\groundtile.xnb" lastWriteTime="6.3.2014 13:40:26" />
   <file source="C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\Assets\AlignmentGrid.png" archivePath="Assets\AlignmentGrid.png" lastWriteTime="5.3.2014 15:13:30" />
   <file source="C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\Assets\Tiles\FlipCycleTileLarge.png" archivePath="Assets\Tiles\FlipCycleTileLarge.png" lastWriteTime="5.3.2014 15:13:31" />
   <file source="C:\Users\Juho\Documents\GitHub\CavemanRunner\CavemanRunner\CavemanRunner\Assets\Tiles\FlipCycleTileSmall.png" archivePath="Assets\Tiles\FlipCycleTileSmall.png" lastWriteTime="5.3.2014 15:13:31" />
