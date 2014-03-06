@@ -40,6 +40,7 @@ namespace CavemanRunner
 
             // update transform
             transform.Position += physics.Velocity;
+            transform.Position += physics.Velocity;
 
             base.Update(gameTime);
         }

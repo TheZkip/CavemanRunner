@@ -19,12 +19,11 @@ namespace CavemanRunner
 
         GraphicsDeviceManager graphics;
         public SpriteBatch spriteBatch;
-        GameComponentCollection scrollables;
         Player player;
         GameState gameState;
         int score;
         float distance;
-        Texture2D platformTexture;
+        Texture2D platformTexture, playerTexture;
         GameObject platformTile;
 
         public CavemanRunner()
@@ -41,10 +40,6 @@ namespace CavemanRunner
         /// </summary>
         protected override void Initialize()
         {
-            player = new Player(this, Content.Load<Texture2D>("/Graphics/caveman"), new Vector2(0, 0));
-            scrollables = new GameComponentCollection();
-            platformTile = new GameObject(this, Content.Load<Texture2D>("/Graphics/groundtile"), new Vector2(100, 100));
-
             base.Initialize();
         }
 
@@ -56,7 +51,9 @@ namespace CavemanRunner
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            platformTexture = Content.Load<Texture2D>("\\Graphics\\groundtile");
+            player = new Player(this, Content.Load<Texture2D>("Graphics/caveman"), new Vector2(100, 100));
+            platformTile = new GameObject(this, Content.Load<Texture2D>("Graphics/groundtile"), new Vector2(100, 100));
+            Components.Add(player);
         }
 
         /// <summary>
@@ -75,10 +72,9 @@ namespace CavemanRunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            Components.GetEnumerator().Reset();
-            while(Components.GetEnumerator().MoveNext())
+            foreach(GameObject o in Components)
             {
-                ((GameObject)Components.GetEnumerator().Current).Update(gameTime);
+                o.Update(gameTime);
             }
 
             base.Update(gameTime);
@@ -92,10 +88,9 @@ namespace CavemanRunner
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            Components.GetEnumerator().Reset();
-            while (Components.GetEnumerator().MoveNext())
+            foreach (GameObject o in Components)
             {
-                ((GameObject)Components.GetEnumerator().Current).Draw(gameTime);
+                o.Draw(gameTime);
             }
 
             base.Draw(gameTime);
