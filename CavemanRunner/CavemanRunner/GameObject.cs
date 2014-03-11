@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CavemanRunner
 {
-    class GameObject : DrawableGameComponent
+    class GameObject
     {
         // private fields
         protected Renderer renderer;
@@ -15,28 +15,24 @@ namespace CavemanRunner
         protected Collider collider;
         SpriteBatch spriteBatch;
 
-        public GameObject(CavemanRunner game, Texture2D texture, Vector2 position)
-            : base(game)
+        public void Initialize(CavemanRunner game, Texture2D texture)
         {
-            spriteBatch = game.spriteBatch;
-
             renderer = new Renderer();
             renderer.Texture = texture;
 
             physics = new Physics();
+            physics.Collider = texture.Bounds;
 
             collider = new Collider();
             collider.Bounds = renderer.Texture.Bounds;
 
             transform = new Transform();
-            transform.Position = position;
+
+            spriteBatch = game.spriteBatch;
         }
 
-        public GameObject(CavemanRunner game, Texture2D texture, Vector2 position, Vector2 velocity, int mass, bool isStatic = false)
-            : base(game)
+        public void Initialize(CavemanRunner game, Texture2D texture, Vector2 velocity, int mass, bool isStatic = false)
         {
-            spriteBatch = game.spriteBatch;
-
             renderer = new Renderer();
             renderer.Texture = texture;
             renderer.Initialize();
@@ -47,14 +43,11 @@ namespace CavemanRunner
             collider.Bounds = renderer.Texture.Bounds;
 
             transform = new Transform();
-            transform.Position = position;
+
+            spriteBatch = game.spriteBatch;
         }
 
-        public override void Initialize()
-        {
-            base.Initialize();
-        }
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             // update physics
             if (physics != null)
@@ -62,21 +55,36 @@ namespace CavemanRunner
 
             // update transform
             transform.Position += physics.Velocity;
+<<<<<<< HEAD
 
             // set collider to position
             collider.SetPosition(transform.Position);
             //collider.CheckCollisions();
 
             base.Update(gameTime);
+=======
+            physics.Collider = new Rectangle(Convert.ToInt32(transform.Position.X),
+                Convert.ToInt32(transform.Position.Y), physics.Collider.Width, physics.Collider.Height);
+>>>>>>> origin/juhvo's-implementations
         }
 
-        public override void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime)
         {
             spriteBatch.Begin();
             spriteBatch.Draw(renderer.Texture, transform.Position - renderer.RenderOffset, Color.White);
             spriteBatch.End();
+        }
 
-            base.Draw(gameTime);
+        public bool CheckCollision(GameObject gameObject)
+        {
+            if(physics.Collider.Intersects(gameObject.physics.Collider))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
