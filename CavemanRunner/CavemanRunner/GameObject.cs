@@ -55,17 +55,14 @@ namespace CavemanRunner
 
             // update transform
             transform.Position += physics.Velocity;
-<<<<<<< HEAD
 
             // set collider to position
             collider.SetPosition(transform.Position);
             //collider.CheckCollisions();
 
             base.Update(gameTime);
-=======
             physics.Collider = new Rectangle(Convert.ToInt32(transform.Position.X),
                 Convert.ToInt32(transform.Position.Y), physics.Collider.Width, physics.Collider.Height);
->>>>>>> origin/juhvo's-implementations
         }
 
         public void Draw(GameTime gameTime)
