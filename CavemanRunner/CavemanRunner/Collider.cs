@@ -8,8 +8,10 @@ namespace CavemanRunner
 {
     public class Collider
     {
+        
+
         private Rectangle bounds;
-        private bool[,] layerMatrix;
+        private LayerMask.Layer layer;
 
         public Rectangle Bounds
         {

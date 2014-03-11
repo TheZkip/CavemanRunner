@@ -9,10 +9,10 @@ namespace CavemanRunner
     class GameObject
     {
         // private fields
-        protected Renderer renderer;
-        protected Transform transform;
-        protected Physics physics;
-        protected Collider collider;
+        public Renderer renderer;
+        public Transform transform;
+        public Physics physics;
+        public Collider collider;
         SpriteBatch spriteBatch;
 
         public void Initialize(CavemanRunner game, Texture2D texture)
@@ -21,7 +21,6 @@ namespace CavemanRunner
             renderer.Texture = texture;
 
             physics = new Physics();
-            physics.Collider = texture.Bounds;
 
             collider = new Collider();
             collider.Bounds = renderer.Texture.Bounds;
@@ -59,10 +58,6 @@ namespace CavemanRunner
             // set collider to position
             collider.SetPosition(transform.Position);
             //collider.CheckCollisions();
-
-            base.Update(gameTime);
-            physics.Collider = new Rectangle(Convert.ToInt32(transform.Position.X),
-                Convert.ToInt32(transform.Position.Y), physics.Collider.Width, physics.Collider.Height);
         }
 
         public void Draw(GameTime gameTime)
@@ -70,18 +65,6 @@ namespace CavemanRunner
             spriteBatch.Begin();
             spriteBatch.Draw(renderer.Texture, transform.Position - renderer.RenderOffset, Color.White);
             spriteBatch.End();
-        }
-
-        public bool CheckCollision(GameObject gameObject)
-        {
-            if(physics.Collider.Intersects(gameObject.physics.Collider))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
     }
 }

@@ -50,10 +50,12 @@ namespace CavemanRunner
             reservedObjects.Add(o);
         }
 
-        public void ActivateNewObject(Vector2 position)
+        public GameObject ActivateNewObject()
         {
             objects.Add(reservedObjects[0]);
             reservedObjects.RemoveAt(0);
+
+            return (objects[objects.Count - 1] as GameObject);
         }
     }
 }

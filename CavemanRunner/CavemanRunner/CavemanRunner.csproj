@@ -73,6 +73,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Collider.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="HealthCollectible.cs" />
     <Compile Include="ICollectible.cs" />

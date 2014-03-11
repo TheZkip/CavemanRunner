@@ -67,17 +67,12 @@ namespace CavemanRunner
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-<<<<<<< HEAD
-            player = new Player(this, Content.Load<Texture2D>("Graphics/caveman"), new Vector2(100, 100), new Vector2(0, 0), 10);
-            platformTile = new Platform(this, Content.Load<Texture2D>("Graphics/groundtile"),
-                new Vector2(GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 200), 100);
-=======
+
             player = new Player();
             player.Initialize(this, Content.Load<Texture2D>("Graphics/caveman"),
                 new Vector2(100, 100), 100);
-            platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/groundtile"));
-            platformPool.ActivateNewObject(new Vector2(GraphicsDevice.Viewport.Width, 100));
->>>>>>> origin/juhvo's-implementations
+            platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/groundtile"), new Vector2(-1, 0), 1, true);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width, 300);
         }
 
         /// <summary>
@@ -96,38 +91,26 @@ namespace CavemanRunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-<<<<<<< HEAD
+            player.Update(gameTime);
+
             // jump on two finger tap
             touches = TouchPanel.GetState();
             if (touches.Count == 2)
-=======
-            foreach(Player o in Components)
->>>>>>> origin/juhvo's-implementations
             {
-                if (jumpDoubleTap == false)
-                {
-                    player.Jump();
-                }
-
+                player.Jump();
                 jumpDoubleTap = true;
             }
-<<<<<<< HEAD
             else
             {
                 jumpDoubleTap = false;
             }
 
-            foreach(GameObject o in Components)
-            {
-                o.Update(gameTime);
-            }
 
-=======
             foreach(GameObject go in platformPool.Objects)
             {
                 go.Update(gameTime);
             }
->>>>>>> origin/juhvo's-implementations
+
             base.Update(gameTime);
         }
 
@@ -138,6 +121,9 @@ namespace CavemanRunner
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            player.Draw(gameTime);
+
             foreach (GameObject go in platformPool.Objects)
             {
                 go.Draw(gameTime);
