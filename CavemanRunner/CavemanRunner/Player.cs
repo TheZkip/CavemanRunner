@@ -12,6 +12,8 @@ namespace CavemanRunner
         float health = 0f;
         bool isSpecialInUse = false;
         bool isGrounded = false;
+        CavemanRunner.CollisionID collisionID = CavemanRunner.CollisionID.Player;
+        CavemanRunner.CollisionID[] collidingObjects = { CavemanRunner.CollisionID.Platform };
 
         public Player(CavemanRunner game, Texture2D texture, Vector2 position, Vector2 velocity, int mass)
             : base(game, texture, position, velocity, mass)

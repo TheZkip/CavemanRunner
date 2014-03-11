@@ -11,7 +11,7 @@ namespace CavemanRunner
         public Platform(CavemanRunner game, Texture2D texture, Vector2 position, int mass)
             : base(game, texture, position, new Vector2(-(float)game.tempo / 100, 0), mass, true)
         {
-            game.Components.Add(this);
+
         }
 
         public override void Initialize()
@@ -20,6 +20,10 @@ namespace CavemanRunner
         }
         public override void Update(GameTime gameTime)
         {
+            if(this.transform.Position.X <= 0)
+            {
+                ((CavemanRunner)Game).Components.Remove(this);
+            }
             base.Update(gameTime);
         }
 

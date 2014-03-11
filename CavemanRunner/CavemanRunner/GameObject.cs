@@ -23,6 +23,7 @@ namespace CavemanRunner
             renderer.Texture = texture;
 
             physics = new Physics();
+            physics.Collider = texture.Bounds;
 
             transform = new Transform();
             transform.Position = position;
@@ -54,6 +55,8 @@ namespace CavemanRunner
 
             // update transform
             transform.Position += physics.Velocity;
+            physics.Collider = new Rectangle(Convert.ToInt32(transform.Position.X),
+                Convert.ToInt32(transform.Position.Y), physics.Collider.Width, physics.Collider.Height);
 
             base.Update(gameTime);
         }
@@ -65,6 +68,18 @@ namespace CavemanRunner
             spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        public bool CheckCollision(GameObject gameObject)
+        {
+            if(physics.Collider.Intersects(gameObject.physics.Collider))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

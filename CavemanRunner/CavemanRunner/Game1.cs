@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace CavemanRunner
 {
@@ -18,6 +20,15 @@ namespace CavemanRunner
             PreRun
         }
 
+        public enum CollisionID
+        {
+            Player,
+            Platform,
+            HeathCollectible,
+            ScoreCollectible,
+            Obstacle
+        }
+
         GraphicsDeviceManager graphics;
         public SpriteBatch spriteBatch;
         public TouchCollection touches;
@@ -27,11 +38,12 @@ namespace CavemanRunner
         int score;
         public int tempo = 20;
         float distance;
-        Texture2D platformTexture, playerTexture;
-        GameObject platformTile;
+
+        List<Platform> platforms;
 
         public CavemanRunner()
         {
+            platforms = new List<Platform>();
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
@@ -55,9 +67,14 @@ namespace CavemanRunner
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            player = new Player(this, Content.Load<Texture2D>("Graphics/caveman"), new Vector2(100, 100), new Vector2(0, 0), 100);
-            platformTile = new Platform(this, Content.Load<Texture2D>("Graphics/groundtile"),
-                new Vector2(GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 200), 100);
+            player = new Player(this, Content.Load<Texture2D>("Graphics/caveman"),
+                new Vector2(100, 100), new Vector2(0, 0), 100);
+            for (int i = 0; i < 10; i++)
+            {
+                platforms.Add(new Platform(this, Content.Load<Texture2D>("Graphics/groundtile"),
+                    new Vector2(Content.Load<Texture2D>("Graphics/groundtile").Width * i,
+                    GraphicsDevice.Viewport.Height - 200), 100));
+            }
         }
 
         /// <summary>
@@ -76,7 +93,7 @@ namespace CavemanRunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            foreach(GameObject o in Components)
+            foreach(Player o in Components)
             {
                 o.Update(gameTime);
             }
@@ -85,6 +102,10 @@ namespace CavemanRunner
             {
                 player.Jump();
                 jumpDoubleTap = false;
+            }
+            foreach(Platform p in platforms)
+            {
+                p.Update(gameTime);
             }
 
             base.Update(gameTime);
@@ -98,9 +119,9 @@ namespace CavemanRunner
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            foreach (GameObject o in Components)
+            foreach(Platform p in platforms)
             {
-                o.Draw(gameTime);
+                p.Draw(gameTime);
             }
 
             base.Draw(gameTime);
