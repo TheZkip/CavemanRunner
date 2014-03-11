@@ -39,11 +39,11 @@ namespace CavemanRunner
         public int tempo = 20;
         float distance;
 
-        List<Platform> platforms;
+        Pool<Platform> platformPool;
 
         public CavemanRunner()
         {
-            platforms = new List<Platform>();
+            platformPool = new Pool<Platform>(10);
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
@@ -67,14 +67,11 @@ namespace CavemanRunner
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            player = new Player(this, Content.Load<Texture2D>("Graphics/caveman"),
-                new Vector2(100, 100), new Vector2(0, 0), 100);
-            for (int i = 0; i < 10; i++)
-            {
-                platforms.Add(new Platform(this, Content.Load<Texture2D>("Graphics/groundtile"),
-                    new Vector2(Content.Load<Texture2D>("Graphics/groundtile").Width * i,
-                    GraphicsDevice.Viewport.Height - 200), 100));
-            }
+            player = new Player();
+            player.Initialize(this, Content.Load<Texture2D>("Graphics/caveman"),
+                new Vector2(100, 100), 100);
+            platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/groundtile"));
+            platformPool.ActivateNewObject(new Vector2(GraphicsDevice.Viewport.Width, 100));
         }
 
         /// <summary>
@@ -97,17 +94,10 @@ namespace CavemanRunner
             {
                 o.Update(gameTime);
             }
-            // jump on two finger tap
-            if (jumpDoubleTap)
+            foreach(GameObject go in platformPool.Objects)
             {
-                player.Jump();
-                jumpDoubleTap = false;
+                go.Update(gameTime);
             }
-            foreach(Platform p in platforms)
-            {
-                p.Update(gameTime);
-            }
-
             base.Update(gameTime);
         }
 
@@ -118,12 +108,10 @@ namespace CavemanRunner
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            foreach(Platform p in platforms)
+            foreach (GameObject go in platformPool.Objects)
             {
-                p.Draw(gameTime);
+                go.Draw(gameTime);
             }
-
             base.Draw(gameTime);
         }
     }

@@ -15,19 +15,9 @@ namespace CavemanRunner
         CavemanRunner.CollisionID collisionID = CavemanRunner.CollisionID.Player;
         CavemanRunner.CollisionID[] collidingObjects = { CavemanRunner.CollisionID.Platform };
 
-        public Player(CavemanRunner game, Texture2D texture, Vector2 position, Vector2 velocity, int mass)
-            : base(game, texture, position, velocity, mass)
-        {
-            game.Components.Add(this);
-        }
-
         public float Health { get { return health; } set { health = value; } }
 
-        public override void Initialize()
-        {
-            base.Initialize();
-        }
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             if (isSpecialInUse)
             {
@@ -37,7 +27,7 @@ namespace CavemanRunner
             base.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime)
         {
 
             base.Draw(gameTime);
