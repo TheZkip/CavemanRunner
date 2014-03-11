@@ -31,14 +31,16 @@ namespace CavemanRunner
 
         private void CavemanRunner_ManipulationStarted(object sender, System.Windows.Input.ManipulationStartedEventArgs e)
         {
-            TouchCollection touches = TouchPanel.GetState();
-            _game.touches = touches;
+            //TouchCollection touches = TouchPanel.GetState();
+            //_game.touches = touches;
 
-            if (touches.Count == 2)
-            {
-                _game.jumpDoubleTap = true;
-                e.Complete();
-            }
+            //if (touches.Count <= 2)
+            //{
+            //    if (touches.Count == 2)
+            //        _game.jumpDoubleTap = true;
+
+            //    e.Complete();
+            //}
         }
     }
 }

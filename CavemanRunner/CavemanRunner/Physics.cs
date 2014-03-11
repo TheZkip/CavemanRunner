@@ -13,7 +13,6 @@ namespace CavemanRunner
 
         float mass;
         Vector2 velocity;
-        Rectangle collider;
         bool isStatic;
         float lastUpdate = 0f;
         IList<Vector2> forcesToApply;
@@ -23,7 +22,6 @@ namespace CavemanRunner
             forcesToApply = new List<Vector2>();
             mass = DefaultMass;
             velocity = new Vector2(0f, 0f);
-            collider = new Rectangle();
         }
 
         public Physics (float mass, bool isStatic)
@@ -32,7 +30,6 @@ namespace CavemanRunner
             this.isStatic = isStatic;
             forcesToApply = new List<Vector2>();
             velocity = new Vector2(0f, 0f);
-            collider = new Rectangle();
         }
 
         public Physics(float mass, bool isStatic, Vector2 velocity)
@@ -41,12 +38,10 @@ namespace CavemanRunner
             this.isStatic = isStatic;
             forcesToApply = new List<Vector2>();
             this.Velocity = velocity;
-            collider = new Rectangle();
         }
 
         public float Mass { get { return mass; } set { mass = value; } }
         public Vector2 Velocity { get { return velocity; } set { velocity = value; } }
-        public Rectangle Collider { get { return collider; } set { collider = value; } }
         public bool IsStatic { get { return isStatic; } set { isStatic = value; } }
 
         void ApplyForce (Vector2 force, GameTime gameTime)
@@ -60,14 +55,19 @@ namespace CavemanRunner
             forcesToApply.Add(force);
         }
 
-        public void Update(GameTime gameTime)
+        public void Stop ()
+        {
+            velocity = Vector2.Zero;
+        }
+
+        public void Update(GameTime gameTime, Vector2 position)
         {
             // bail out if object is static
             if (isStatic)
                 return;
 
             // apply gravity
-            ApplyForce(new Vector2(0f, Gravity), gameTime);
+            ApplyForce(new Vector2(0f, Gravity*mass), gameTime);
 
             // apply all added forces
             foreach (Vector2 force in forcesToApply)

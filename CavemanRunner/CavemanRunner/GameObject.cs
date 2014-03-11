@@ -12,6 +12,7 @@ namespace CavemanRunner
         protected Renderer renderer;
         protected Transform transform;
         protected Physics physics;
+        protected Collider collider;
         SpriteBatch spriteBatch;
 
         public GameObject(CavemanRunner game, Texture2D texture, Vector2 position)
@@ -24,6 +25,9 @@ namespace CavemanRunner
 
             physics = new Physics();
 
+            collider = new Collider();
+            collider.Bounds = renderer.Texture.Bounds;
+
             transform = new Transform();
             transform.Position = position;
         }
@@ -35,8 +39,12 @@ namespace CavemanRunner
 
             renderer = new Renderer();
             renderer.Texture = texture;
+            renderer.Initialize();
 
             physics = new Physics(mass, isStatic, velocity);
+
+            collider = new Collider();
+            collider.Bounds = renderer.Texture.Bounds;
 
             transform = new Transform();
             transform.Position = position;
@@ -50,10 +58,14 @@ namespace CavemanRunner
         {
             // update physics
             if (physics != null)
-                physics.Update(gameTime);
+                physics.Update(gameTime, transform.Position);
 
             // update transform
             transform.Position += physics.Velocity;
+
+            // set collider to position
+            collider.SetPosition(transform.Position);
+            //collider.CheckCollisions();
 
             base.Update(gameTime);
         }
@@ -61,7 +73,7 @@ namespace CavemanRunner
         public override void Draw(GameTime gameTime)
         {
             spriteBatch.Begin();
-            spriteBatch.Draw(renderer.Texture, transform.Position, Color.White);
+            spriteBatch.Draw(renderer.Texture, transform.Position - renderer.RenderOffset, Color.White);
             spriteBatch.End();
 
             base.Draw(gameTime);

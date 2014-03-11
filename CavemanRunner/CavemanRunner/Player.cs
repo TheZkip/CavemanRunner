@@ -8,7 +8,7 @@ namespace CavemanRunner
     class Player : GameObject
     {
         //float jumpThreshold;
-        float jumpStrength = 10000f;
+        float jumpStrength = 5000f;
         float health = 0f;
         bool isSpecialInUse = false;
         bool isGrounded = false;
@@ -32,6 +32,18 @@ namespace CavemanRunner
 
             }
 
+            if (transform.Position.Y > 300)
+            {
+                transform.Position = Vector2.UnitY * 300;
+                isGrounded = true;
+                physics.Stop();
+            }
+            else if (transform.Position.Y < 300)
+            {
+                isGrounded = false;
+            }
+               
+
             base.Update(gameTime);
         }
 
@@ -43,7 +55,8 @@ namespace CavemanRunner
 
         public void Jump ()
         {
-            physics.AddForce(Vector2.UnitY * -jumpStrength);
+            if (isGrounded)
+                physics.AddForce(Vector2.UnitY * -jumpStrength);
         }
 
         void StartSpecial ()

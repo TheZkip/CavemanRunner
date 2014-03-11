@@ -55,7 +55,7 @@ namespace CavemanRunner
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            player = new Player(this, Content.Load<Texture2D>("Graphics/caveman"), new Vector2(100, 100), new Vector2(0, 0), 100);
+            player = new Player(this, Content.Load<Texture2D>("Graphics/caveman"), new Vector2(100, 100), new Vector2(0, 0), 10);
             platformTile = new Platform(this, Content.Load<Texture2D>("Graphics/groundtile"),
                 new Vector2(GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 200), 100);
         }
@@ -76,15 +76,25 @@ namespace CavemanRunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            // jump on two finger tap
+            touches = TouchPanel.GetState();
+            if (touches.Count == 2)
+            {
+                if (jumpDoubleTap == false)
+                {
+                    player.Jump();
+                }
+
+                jumpDoubleTap = true;
+            }
+            else
+            {
+                jumpDoubleTap = false;
+            }
+
             foreach(GameObject o in Components)
             {
                 o.Update(gameTime);
-            }
-            // jump on two finger tap
-            if (jumpDoubleTap)
-            {
-                player.Jump();
-                jumpDoubleTap = false;
             }
 
             base.Update(gameTime);

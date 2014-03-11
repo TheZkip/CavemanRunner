@@ -13,7 +13,18 @@ namespace CavemanRunner
         Dictionary<string, Animation> animations;
         bool isAnimating;
         bool animateAlways;
-        // isVisible ei tarvita, sillä GameComponentissa on jo vastaava
+        Vector2 renderOffset;
+
+        public Vector2 RenderOffset
+        {
+            get { return renderOffset; }
+            set { renderOffset = value; }
+        }
+
+        public void Initialize ()
+        {
+            renderOffset = new Vector2(Texture.Width / 2, Texture.Height / 2);
+        }
 
         public void PlayAnimation (string animationName)
         {
