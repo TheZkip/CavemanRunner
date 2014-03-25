@@ -77,15 +77,18 @@ namespace CavemanRunner
             player = new Player();
             player.Initialize(this, Content.Load<Texture2D>("Graphics/caveman"),
                 new Vector2(100, 100), 100);
+
             leftDrum = new Drum();
-            leftDrum.Initialize(this, Content.Load<Texture2D>("Graphics/drum"), Vector2.Zero, 100, true);
+            leftDrum.Initialize(this, Content.Load<Texture2D>("Graphics/halfscreen"), Vector2.Zero, 100, true);
             leftDrum.drumSide = DrumSide.side.LEFT;
-            leftDrum.transform.Position = new Vector2(GraphicsDevice.Viewport.Width / 4, GraphicsDevice.Viewport.Height / 4 * 3);
+            leftDrum.transform.Position = Vector2.Zero; // new Vector2(GraphicsDevice.Viewport.Width / 4, GraphicsDevice.Viewport.Height / 4 * 3);
+            leftDrum.renderer.SetAnchorPoint(Renderer.AnchorPoint.TopLeft);
             
             rightDrum = new Drum();
-            rightDrum.Initialize(this, Content.Load<Texture2D>("Graphics/drum"), Vector2.Zero, 100, true);
+            rightDrum.Initialize(this, Content.Load<Texture2D>("Graphics/halfscreen"), Vector2.Zero, 100, true);
             rightDrum.drumSide = DrumSide.side.RIGHT;
-            rightDrum.transform.Position = new Vector2(GraphicsDevice.Viewport.Width / 4 * 3, GraphicsDevice.Viewport.Height / 4 * 3);
+            rightDrum.transform.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 0f);
+            rightDrum.renderer.SetAnchorPoint(Renderer.AnchorPoint.TopLeft);
 
             platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/groundtile"), new Vector2(-1, 0), 1, true);
             platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width, 300);
