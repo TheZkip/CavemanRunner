@@ -27,7 +27,6 @@ namespace CavemanRunner
 
             if (transform.Position.Y >= 300)
             {
-                transform.Position = Vector2.UnitY * 300;
                 isGrounded = true;
                 physics.Stop();
             }
@@ -39,12 +38,12 @@ namespace CavemanRunner
                 isGrounded = false;
             }
 
+            this.physics.AddForce(-this.transform.Position.X / 10 * Vector2.UnitX);
             base.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
         {
-
             base.Draw(gameTime);
         }
 
@@ -68,6 +67,11 @@ namespace CavemanRunner
         {
             // TODO: change animation
             isSpecialInUse = false;
+        }
+
+        public void Move(int amount)
+        {
+            //this.transform.Position += Vector2.UnitX * amount;
         }
     }
 }

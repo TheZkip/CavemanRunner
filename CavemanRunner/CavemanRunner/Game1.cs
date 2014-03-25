@@ -76,7 +76,7 @@ namespace CavemanRunner
 
             player = new Player();
             player.Initialize(this, Content.Load<Texture2D>("Graphics/caveman"),
-                new Vector2(100, 100), 100);
+                Vector2.Zero, 100);
 
             leftDrum = new Drum();
             leftDrum.Initialize(this, Content.Load<Texture2D>("Graphics/halfscreen"), Vector2.Zero, 100, true);
@@ -92,6 +92,9 @@ namespace CavemanRunner
 
             platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/groundtile"), new Vector2(-1, 0), 1, true);
             platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width, 300);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width + 350, 300);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width + 350 * 2, 300);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width + 350 * 3, 300);
 
             click = Content.Load<SoundEffect>("Sounds/click");
             bongo1 = Content.Load<SoundEffect>("Sounds/bongo1");
@@ -137,14 +140,20 @@ namespace CavemanRunner
                 if (CheckDrumHit(touches, leftDrum))
                 {
                     bongo1.Play();
-                    CheckDrumTiming(leftDrum, gameTime);
-                    previousDrumSide = leftDrum.drumSide;
+                    if (CheckDrumTiming(leftDrum, gameTime))
+                    {
+                        previousDrumSide = leftDrum.drumSide;
+                        player.physics.AddForce(Vector2.UnitX * 2000);
+                    }
                 }
                 else if (CheckDrumHit(touches, rightDrum))
                 {
                     bongo2.Play();
-                    CheckDrumTiming(rightDrum, gameTime);
-                    previousDrumSide = rightDrum.drumSide;
+                    if (CheckDrumTiming(rightDrum, gameTime))
+                    {
+                        previousDrumSide = rightDrum.drumSide;
+                        player.physics.AddForce(Vector2.UnitX * 2000);
+                    }
                 }
             }
             else if (touches.Count == 2 && CheckDrumHit(touches, leftDrum, rightDrum)
@@ -162,6 +171,12 @@ namespace CavemanRunner
             foreach(GameObject go in platformPool.Objects)
             {
                 go.Update(gameTime);
+                if(go.transform.Position.X < 0 - go.renderer.Texture.Width)
+                {
+                    platformPool.ReleaseObject((Platform)go);
+                    platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width + 200, 300);
+                    return;
+                }
             }
 
             leftDrum.Update(gameTime);
@@ -205,6 +220,11 @@ namespace CavemanRunner
                 spriteBatch.End();
             }
 
+            spriteBatch.Begin();
+            spriteBatch.DrawString(Content.Load<SpriteFont>("Fonts/font"), player.transform.Position.ToString(),
+                    new Vector2(0, 100), Color.Black);
+            spriteBatch.End();
+
             player.Draw(gameTime);
             leftDrum.Draw(gameTime);
             rightDrum.Draw(gameTime);
@@ -216,7 +236,7 @@ namespace CavemanRunner
             base.Draw(gameTime);
         }
 
-        private void CheckDrumTiming(Drum drum, GameTime gameTime)
+        private bool CheckDrumTiming(Drum drum, GameTime gameTime)
         {
             hit = false;
             if (drum.drumSide != previousDrumSide)
@@ -231,6 +251,8 @@ namespace CavemanRunner
                     hit = true;
                 }
             }
+
+            return hit;
         }
 
         private bool CheckDrumHit(TouchCollection touches, params Drum[] drums)
