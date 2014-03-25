@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -29,15 +31,19 @@ namespace CavemanRunner
             Obstacle
         }
 
+        DrumSide.side previousDrumSide;
+        Drum leftDrum, rightDrum;
+        SoundEffect click, bongo1, bongo2;
         GraphicsDeviceManager graphics;
         public SpriteBatch spriteBatch;
         public TouchCollection touches;
         public bool jumpDoubleTap;
         Player player;
         GameState gameState;
-        int score;
-        public int tempo = 20;
+        public int tempo = 60, tolerance = 100;
+        int[] clickTimes = { 0, 0, 0, 0 };
         float distance;
+        bool hit = false;
 
         Pool<Platform> platformPool;
 
@@ -71,8 +77,22 @@ namespace CavemanRunner
             player = new Player();
             player.Initialize(this, Content.Load<Texture2D>("Graphics/caveman"),
                 new Vector2(100, 100), 100);
+            leftDrum = new Drum();
+            leftDrum.Initialize(this, Content.Load<Texture2D>("Graphics/drum"), Vector2.Zero, 100, true);
+            leftDrum.drumSide = DrumSide.side.LEFT;
+            leftDrum.transform.Position = new Vector2(GraphicsDevice.Viewport.Width / 4, GraphicsDevice.Viewport.Height / 4 * 3);
+            
+            rightDrum = new Drum();
+            rightDrum.Initialize(this, Content.Load<Texture2D>("Graphics/drum"), Vector2.Zero, 100, true);
+            rightDrum.drumSide = DrumSide.side.RIGHT;
+            rightDrum.transform.Position = new Vector2(GraphicsDevice.Viewport.Width / 4 * 3, GraphicsDevice.Viewport.Height / 4 * 3);
+
             platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/groundtile"), new Vector2(-1, 0), 1, true);
             platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width, 300);
+
+            click = Content.Load<SoundEffect>("Sounds/click");
+            bongo1 = Content.Load<SoundEffect>("Sounds/bongo1");
+            bongo2 = Content.Load<SoundEffect>("Sounds/bongo2");
         }
 
         /// <summary>
@@ -91,12 +111,45 @@ namespace CavemanRunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            player.Update(gameTime);
+            int millis = (int)Math.Round(gameTime.TotalGameTime.TotalMilliseconds);
+
+            if (gameTime.TotalGameTime.TotalSeconds % 10 == 0)
+            {
+                tempo += Convert.ToInt32(gameTime.TotalGameTime.TotalSeconds);
+            }
+
+            if (millis % (60 * 1000 / tempo) == 0)
+            {
+                clickTimes[0] = Convert.ToInt32(millis);
+                clickTimes[1] = clickTimes[0] + 60 * 1000 / tempo / 4;
+                clickTimes[2] = clickTimes[1] + 60 * 1000 / tempo / 4;
+                clickTimes[3] = clickTimes[2] + 60 * 1000 / tempo / 4;
+                click.Play();
+            }
 
             // jump on two finger tap
             touches = TouchPanel.GetState();
-            if (touches.Count == 2)
+            if(touches.Count == 1 && touches[0].State == TouchLocationState.Pressed)
             {
+                if (CheckDrumHit(touches, leftDrum))
+                {
+                    bongo1.Play();
+                    CheckDrumTiming(leftDrum, gameTime);
+                    previousDrumSide = leftDrum.drumSide;
+                }
+                if (CheckDrumHit(touches, rightDrum))
+                {
+                    bongo2.Play();
+                    CheckDrumTiming(rightDrum, gameTime);
+                    previousDrumSide = rightDrum.drumSide;
+                }
+            }
+            else if (touches.Count == 2 && CheckDrumHit(touches, leftDrum, rightDrum)
+                && touches[0].State == TouchLocationState.Pressed
+                && touches[1].State == TouchLocationState.Pressed)
+            {
+                bongo1.Play();
+                bongo2.Play();
                 player.Jump();
                 jumpDoubleTap = true;
             }
@@ -105,12 +158,14 @@ namespace CavemanRunner
                 jumpDoubleTap = false;
             }
 
-
             foreach(GameObject go in platformPool.Objects)
             {
                 go.Update(gameTime);
             }
 
+            leftDrum.Update(gameTime);
+            rightDrum.Update(gameTime);
+            player.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -122,13 +177,56 @@ namespace CavemanRunner
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            if(hit)
+            {
+                spriteBatch.Begin();
+                spriteBatch.DrawString(Content.Load<SpriteFont>("Fonts/font"), "HIT", Vector2.Zero, Color.Black);
+                spriteBatch.End();
+            }
+
             player.Draw(gameTime);
+            leftDrum.Draw(gameTime);
+            rightDrum.Draw(gameTime);
 
             foreach (GameObject go in platformPool.Objects)
             {
                 go.Draw(gameTime);
             }
             base.Draw(gameTime);
+        }
+
+        private void CheckDrumTiming(Drum drum, GameTime gameTime)
+        {
+            hit = false;
+            if (drum.drumSide != previousDrumSide)
+            {
+                if (gameTime.TotalGameTime.TotalMilliseconds <= clickTimes[0] + tolerance ||
+                    gameTime.TotalGameTime.TotalMilliseconds >= clickTimes[3] - tolerance ||
+                    (gameTime.TotalGameTime.TotalMilliseconds >= clickTimes[1] - tolerance &&
+                    gameTime.TotalGameTime.TotalMilliseconds <= clickTimes[1] + tolerance) ||
+                    (gameTime.TotalGameTime.TotalMilliseconds >= clickTimes[2] - tolerance &&
+                    gameTime.TotalGameTime.TotalMilliseconds <= clickTimes[2] + tolerance))
+                {
+                    hit = true;
+                }
+            }
+        }
+
+        private bool CheckDrumHit(TouchCollection touches, params Drum[] drums)
+        {
+            bool result = false;
+            foreach (TouchLocation location in touches)
+            {
+                foreach (Drum drum in drums)
+                {
+                    if (location.Position.X > drum.collider.Bounds.Left && location.Position.X < drum.collider.Bounds.Right &&
+                        location.Position.Y > drum.collider.Bounds.Top && location.Position.Y < drum.collider.Bounds.Bottom)
+                    {
+                        result = true;
+                    }
+                }
+            }
+            return result;
         }
     }
 }
