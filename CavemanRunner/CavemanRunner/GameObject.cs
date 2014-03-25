@@ -31,6 +31,7 @@ namespace CavemanRunner
             collider.Bounds = renderer.Texture.Bounds;
 
             transform = new Transform();
+            transform.Scale = Vector2.One * game.scaleToReference;
 
             spriteBatch = game.spriteBatch;
         }
@@ -49,6 +50,7 @@ namespace CavemanRunner
             collider.Bounds = renderer.Texture.Bounds;
 
             transform = new Transform();
+            transform.Scale = Vector2.One * game.scaleToReference;
 
             spriteBatch = game.spriteBatch;
         }
@@ -70,7 +72,8 @@ namespace CavemanRunner
         public void Draw(GameTime gameTime)
         {
             spriteBatch.Begin();
-            spriteBatch.Draw(renderer.Texture, transform.Position - renderer.RenderOffset, Color.White);
+            spriteBatch.Draw(renderer.Texture, transform.Position - renderer.RenderOffset, renderer.Texture.Bounds,
+                Color.White, 0f, Vector2.Zero, transform.Scale, SpriteEffects.None, 0f);
             spriteBatch.End();
         }
     }

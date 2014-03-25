@@ -20,6 +20,8 @@ namespace CavemanRunner
 
         public void Update(GameTime gameTime)
         {
+            base.Update(gameTime);
+
             if (isSpecialInUse)
             {
 
@@ -38,8 +40,7 @@ namespace CavemanRunner
                 isGrounded = false;
             }
 
-            this.physics.AddForce(-this.transform.Position.X / 10 * Vector2.UnitX);
-            base.Update(gameTime);
+            //this.physics.AddForce(-this.transform.Position.X / 10 * Vector2.UnitX);
         }
 
         public void Draw(GameTime gameTime)
@@ -55,6 +56,13 @@ namespace CavemanRunner
                 physics.AddForce(Vector2.UnitY * -jumpStrength);
                 game.PlayBothBongos();
             }
+        }
+
+        public void SetGrounded()
+        {
+            jumping = false;
+            isGrounded = true;
+            physics.Stop();
         }
 
         void StartSpecial ()

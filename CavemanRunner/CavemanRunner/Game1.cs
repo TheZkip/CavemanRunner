@@ -13,6 +13,8 @@ namespace CavemanRunner
     /// </summary>
     public class CavemanRunner : Game
     {
+        public float scaleToReference;
+
         public enum GameState
         {
             Menu = 0,
@@ -71,24 +73,29 @@ namespace CavemanRunner
         /// </summary>
         protected override void LoadContent()
         {
+            scaleToReference = (float)GraphicsDevice.Viewport.Width / 800f;
+
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             player = new Player();
             player.Initialize(this, Content.Load<Texture2D>("Graphics/caveman"),
                 Vector2.Zero, 100);
+            player.renderer.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
 
             leftDrum = new Drum();
             leftDrum.Initialize(this, Content.Load<Texture2D>("Graphics/halfscreen"), Vector2.Zero, 100, true);
             leftDrum.drumSide = DrumSide.side.LEFT;
             leftDrum.transform.Position = Vector2.Zero; // new Vector2(GraphicsDevice.Viewport.Width / 4, GraphicsDevice.Viewport.Height / 4 * 3);
             leftDrum.renderer.SetAnchorPoint(Renderer.AnchorPoint.TopLeft);
+            leftDrum.collider.SetAnchorPoint(Renderer.AnchorPoint.TopLeft);
             
             rightDrum = new Drum();
             rightDrum.Initialize(this, Content.Load<Texture2D>("Graphics/halfscreen"), Vector2.Zero, 100, true);
             rightDrum.drumSide = DrumSide.side.RIGHT;
             rightDrum.transform.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 0f);
             rightDrum.renderer.SetAnchorPoint(Renderer.AnchorPoint.TopLeft);
+            rightDrum.collider.SetAnchorPoint(Renderer.AnchorPoint.TopLeft);
 
             platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/groundtile"), new Vector2(-1, 0), 1, true);
             platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width, 300);
@@ -117,6 +124,17 @@ namespace CavemanRunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            // check collision against platforms
+            foreach (Platform platform in platformPool.Objects)
+            {
+                if (player.collider.CheckCollisions(platform.collider)
+                    && player.physics.Velocity.Y > 0 && player.transform.Position.Y < platform.transform.Position.Y)
+                {
+
+                    player.SetGrounded();
+                }
+            }
+
             int millis = (int)Math.Round(gameTime.TotalGameTime.TotalMilliseconds);
 
             if (gameTime.TotalGameTime.TotalSeconds % 10 == 0)
@@ -143,7 +161,7 @@ namespace CavemanRunner
                     if (CheckDrumTiming(leftDrum, gameTime))
                     {
                         previousDrumSide = leftDrum.drumSide;
-                        player.physics.AddForce(Vector2.UnitX * 2000);
+                        //player.physics.AddForce(Vector2.UnitX * 2000);
                     }
                 }
                 else if (CheckDrumHit(touches, rightDrum))
@@ -152,7 +170,7 @@ namespace CavemanRunner
                     if (CheckDrumTiming(rightDrum, gameTime))
                     {
                         previousDrumSide = rightDrum.drumSide;
-                        player.physics.AddForce(Vector2.UnitX * 2000);
+                        //player.physics.AddForce(Vector2.UnitX * 2000);
                     }
                 }
             }
