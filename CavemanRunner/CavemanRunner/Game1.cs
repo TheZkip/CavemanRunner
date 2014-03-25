@@ -134,14 +134,20 @@ namespace CavemanRunner
                 if (CheckDrumHit(touches, leftDrum))
                 {
                     bongo1.Play();
-                    CheckDrumTiming(leftDrum, gameTime);
-                    previousDrumSide = leftDrum.drumSide;
+                    if (CheckDrumTiming(leftDrum, gameTime))
+                    {
+                        previousDrumSide = leftDrum.drumSide;
+                        player.physics.AddForce(Vector2.UnitX * 200000);
+                    }
                 }
                 if (CheckDrumHit(touches, rightDrum))
                 {
                     bongo2.Play();
-                    CheckDrumTiming(rightDrum, gameTime);
-                    previousDrumSide = rightDrum.drumSide;
+                    if (CheckDrumTiming(rightDrum, gameTime))
+                    {
+                        previousDrumSide = rightDrum.drumSide;
+                        player.physics.AddForce(Vector2.UnitX * 200000);
+                    }
                 }
             }
             else if (touches.Count == 2 && CheckDrumHit(touches, leftDrum, rightDrum)
@@ -181,6 +187,8 @@ namespace CavemanRunner
             {
                 spriteBatch.Begin();
                 spriteBatch.DrawString(Content.Load<SpriteFont>("Fonts/font"), "HIT", Vector2.Zero, Color.Black);
+                spriteBatch.DrawString(Content.Load<SpriteFont>("Fonts/font"), player.transform.Position.ToString(),
+                    new Vector2(0, 100), Color.Black);
                 spriteBatch.End();
             }
 
@@ -195,7 +203,7 @@ namespace CavemanRunner
             base.Draw(gameTime);
         }
 
-        private void CheckDrumTiming(Drum drum, GameTime gameTime)
+        private bool CheckDrumTiming(Drum drum, GameTime gameTime)
         {
             hit = false;
             if (drum.drumSide != previousDrumSide)
@@ -210,6 +218,8 @@ namespace CavemanRunner
                     hit = true;
                 }
             }
+
+            return hit;
         }
 
         private bool CheckDrumHit(TouchCollection touches, params Drum[] drums)
