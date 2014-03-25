@@ -57,7 +57,7 @@ namespace CavemanRunner
 
         public void Stop ()
         {
-            velocity = new Vector2(velocity.X, 0f);
+            velocity = Vector2.UnitX * velocity;
         }
 
         public void Update(GameTime gameTime, Vector2 position)
