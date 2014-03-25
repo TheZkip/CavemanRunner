@@ -137,7 +137,7 @@ namespace CavemanRunner
                     CheckDrumTiming(leftDrum, gameTime);
                     previousDrumSide = leftDrum.drumSide;
                 }
-                if (CheckDrumHit(touches, rightDrum))
+                else if (CheckDrumHit(touches, rightDrum))
                 {
                     bongo2.Play();
                     CheckDrumTiming(rightDrum, gameTime);
@@ -145,11 +145,9 @@ namespace CavemanRunner
                 }
             }
             else if (touches.Count == 2 && CheckDrumHit(touches, leftDrum, rightDrum)
-                && touches[0].State == TouchLocationState.Pressed
-                && touches[1].State == TouchLocationState.Pressed)
+                && (touches[0].State == TouchLocationState.Pressed || touches[0].State == TouchLocationState.Moved)
+                && (touches[1].State == TouchLocationState.Pressed || touches[1].State == TouchLocationState.Moved))
             {
-                bongo1.Play();
-                bongo2.Play();
                 player.Jump();
                 jumpDoubleTap = true;
             }
@@ -169,6 +167,12 @@ namespace CavemanRunner
             base.Update(gameTime);
         }
 
+        public void PlayBothBongos()
+        {
+            bongo1.Play();
+            bongo2.Play();
+        }
+
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
@@ -176,6 +180,20 @@ namespace CavemanRunner
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            if (touches.Count == 1)
+            {
+                spriteBatch.Begin();
+                spriteBatch.DrawString(Content.Load<SpriteFont>("Fonts/font"), touches[0].State.ToString(), Vector2.UnitY * 20, Color.Black);
+                spriteBatch.End();
+            }
+            else if (touches.Count == 2)
+            {
+                spriteBatch.Begin();
+                spriteBatch.DrawString(Content.Load<SpriteFont>("Fonts/font"), touches[0].State.ToString(), Vector2.UnitY * 20, Color.Black);
+                spriteBatch.DrawString(Content.Load<SpriteFont>("Fonts/font"), touches[0].State.ToString(), Vector2.UnitY * 40, Color.Black);
+                spriteBatch.End();
+            }
 
             if(hit)
             {

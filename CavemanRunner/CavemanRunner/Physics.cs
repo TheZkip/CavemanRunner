@@ -8,7 +8,7 @@ namespace CavemanRunner
 {
     class Physics
     {
-        public static float Gravity = 30f; // 9.81f;
+        public static float Gravity = 9.81f;
         public static float DefaultMass = 1f;
 
         float mass;
@@ -57,7 +57,7 @@ namespace CavemanRunner
 
         public void Stop ()
         {
-            velocity = Vector2.Zero;
+            velocity = new Vector2(velocity.X, 0f);
         }
 
         public void Update(GameTime gameTime, Vector2 position)
