@@ -97,11 +97,9 @@ namespace CavemanRunner
             rightDrum.renderer.SetAnchorPoint(Renderer.AnchorPoint.TopLeft);
             rightDrum.collider.SetAnchorPoint(Renderer.AnchorPoint.TopLeft);
 
-            platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/groundtile"), new Vector2(-1, 0), 1, true);
-            platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width, 300);
-            platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width + 350, 300);
-            platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width + 350 * 2, 300);
-            platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width + 350 * 3, 300);
+            platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/groundtile640"), new Vector2(-1, 0), 1, true);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height
+                - platformPool.Objects[0].renderer.Texture.Height);
 
             click = Content.Load<SoundEffect>("Sounds/click");
             bongo1 = Content.Load<SoundEffect>("Sounds/bongo1");
@@ -192,9 +190,11 @@ namespace CavemanRunner
                 if(go.transform.Position.X < 0 - go.renderer.Texture.Width)
                 {
                     platformPool.ReleaseObject((Platform)go);
-                    platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width + 200, 300);
+                    platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width,
+                        GraphicsDevice.Viewport.Height - platformPool.Objects[0].renderer.Texture.Height);
                     return;
                 }
+                go.physics.Velocity = -Vector2.UnitX * 160 / tempo;
             }
 
             leftDrum.Update(gameTime);
