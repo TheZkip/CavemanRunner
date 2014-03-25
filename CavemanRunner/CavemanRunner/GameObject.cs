@@ -13,10 +13,15 @@ namespace CavemanRunner
         public Transform transform;
         public Physics physics;
         public Collider collider;
+
+        protected CavemanRunner game;
+
         SpriteBatch spriteBatch;
 
         public void Initialize(CavemanRunner game, Texture2D texture)
         {
+            this.game = game;
+
             renderer = new Renderer();
             renderer.Texture = texture;
 
@@ -32,6 +37,8 @@ namespace CavemanRunner
 
         public void Initialize(CavemanRunner game, Texture2D texture, Vector2 velocity, int mass, bool isStatic = false)
         {
+            this.game = game;
+
             renderer = new Renderer();
             renderer.Texture = texture;
             renderer.Initialize();

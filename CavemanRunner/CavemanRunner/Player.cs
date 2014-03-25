@@ -12,6 +12,7 @@ namespace CavemanRunner
         float health = 0f;
         bool isSpecialInUse = false;
         bool isGrounded = false;
+        bool jumping = false;
         CavemanRunner.CollisionID collisionID = CavemanRunner.CollisionID.Player;
         CavemanRunner.CollisionID[] collidingObjects = { CavemanRunner.CollisionID.Platform };
 
@@ -24,12 +25,15 @@ namespace CavemanRunner
 
             }
 
-            if (transform.Position.Y > 300)
+            if (transform.Position.Y >= 300)
             {
                 isGrounded = true;
             }
             else if (transform.Position.Y < 300)
             {
+                if (physics.Velocity.Y > 0)
+                    jumping = false;
+
                 isGrounded = false;
             }
 
@@ -44,8 +48,12 @@ namespace CavemanRunner
 
         public void Jump ()
         {
-            if (isGrounded)
+            if (isGrounded && !jumping)
+            {
+                jumping = true;
                 physics.AddForce(Vector2.UnitY * -jumpStrength);
+                game.PlayBothBongos();
+            }
         }
 
         void StartSpecial ()
