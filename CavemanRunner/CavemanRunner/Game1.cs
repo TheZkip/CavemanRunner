@@ -76,7 +76,7 @@ namespace CavemanRunner
 
             player = new Player();
             player.Initialize(this, Content.Load<Texture2D>("Graphics/caveman"),
-                new Vector2(100, 100), 100);
+                Vector2.Zero, 100);
             leftDrum = new Drum();
             leftDrum.Initialize(this, Content.Load<Texture2D>("Graphics/drum"), Vector2.Zero, 100, true);
             leftDrum.drumSide = DrumSide.side.LEFT;
@@ -89,6 +89,9 @@ namespace CavemanRunner
 
             platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/groundtile"), new Vector2(-1, 0), 1, true);
             platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width, 300);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width + 350, 300);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width + 350 * 2, 300);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width + 350 * 3, 300);
 
             click = Content.Load<SoundEffect>("Sounds/click");
             bongo1 = Content.Load<SoundEffect>("Sounds/bongo1");
@@ -137,7 +140,7 @@ namespace CavemanRunner
                     if (CheckDrumTiming(leftDrum, gameTime))
                     {
                         previousDrumSide = leftDrum.drumSide;
-                        player.physics.AddForce(Vector2.UnitX * 200000);
+                        player.physics.AddForce(Vector2.UnitX * 2000);
                     }
                 }
                 else if (CheckDrumHit(touches, rightDrum))
@@ -146,7 +149,7 @@ namespace CavemanRunner
                     if (CheckDrumTiming(rightDrum, gameTime))
                     {
                         previousDrumSide = rightDrum.drumSide;
-                        player.physics.AddForce(Vector2.UnitX * 200000);
+                        player.physics.AddForce(Vector2.UnitX * 2000);
                     }
                 }
             }
@@ -165,6 +168,12 @@ namespace CavemanRunner
             foreach(GameObject go in platformPool.Objects)
             {
                 go.Update(gameTime);
+                if(go.transform.Position.X < 0 - go.renderer.Texture.Width)
+                {
+                    platformPool.ReleaseObject((Platform)go);
+                    platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width + 200, 300);
+                    return;
+                }
             }
 
             leftDrum.Update(gameTime);
@@ -205,10 +214,13 @@ namespace CavemanRunner
             {
                 spriteBatch.Begin();
                 spriteBatch.DrawString(Content.Load<SpriteFont>("Fonts/font"), "HIT", Vector2.Zero, Color.Black);
-                spriteBatch.DrawString(Content.Load<SpriteFont>("Fonts/font"), player.transform.Position.ToString(),
-                    new Vector2(0, 100), Color.Black);
                 spriteBatch.End();
             }
+
+            spriteBatch.Begin();
+            spriteBatch.DrawString(Content.Load<SpriteFont>("Fonts/font"), player.transform.Position.ToString(),
+                    new Vector2(0, 100), Color.Black);
+            spriteBatch.End();
 
             player.Draw(gameTime);
             leftDrum.Draw(gameTime);

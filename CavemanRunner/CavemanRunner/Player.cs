@@ -28,6 +28,7 @@ namespace CavemanRunner
             if (transform.Position.Y >= 300)
             {
                 isGrounded = true;
+                physics.Stop();
             }
             else if (transform.Position.Y < 300)
             {
@@ -37,7 +38,7 @@ namespace CavemanRunner
                 isGrounded = false;
             }
 
-            this.physics.AddForce(-1000 * Vector2.UnitX);
+            this.physics.AddForce(-this.transform.Position.X / 10 * Vector2.UnitX);
             base.Update(gameTime);
         }
 
