@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace CavemanRunner
 {
-    public static class LayerMask
+    public class LayerMask
     {
         public enum Layer
         {
@@ -14,14 +14,14 @@ namespace CavemanRunner
             ScoreCollectible
         }
 
-        bool[,] layerMatrix = {
+        static bool[,] layerMatrix = {
                                 { true, true, false, true },
                                 { true, true, false, true },
                                 { true, true, false, true },
                                 { true, true, false, true }
                               };
 
-        public bool GetLayerCollision(Layer a, Layer b)
+        public static bool GetLayerCollision(Layer a, Layer b)
         {
             return layerMatrix[(int)a, (int)b];
         }

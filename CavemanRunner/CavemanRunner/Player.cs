@@ -8,7 +8,7 @@ namespace CavemanRunner
     class Player : GameObject
     {
         //float jumpThreshold;
-        float jumpStrength = 5000f;
+        float jumpStrength = 40000f;
         float health = 0f;
         bool isSpecialInUse = false;
         bool isGrounded = false;

@@ -8,7 +8,7 @@ namespace CavemanRunner
 {
     class Physics
     {
-        public static float Gravity = 9.81f;
+        public static float Gravity = 30f; // 9.81f;
         public static float DefaultMass = 1f;
 
         float mass;
