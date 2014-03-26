@@ -5,10 +5,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CavemanRunner
 {
-    class Animation
+    public class Animation
     {
         // The image representing the collection of images used for animation
-        Texture2D spriteStrip;
+        public Texture2D spriteStrip;
         // The scale used to display the sprite strip
         float scale;
         // The time since we last updated the frame
@@ -22,9 +22,7 @@ namespace CavemanRunner
         // The color of the frame we will be displaying
         Color color;
         // The area of the image strip we want to display
-        Rectangle sourceRect = new Rectangle();
-        // The area where we want to display the image strip in the game
-        Rectangle destinationRect = new Rectangle();
+        public Rectangle sourceRect = new Rectangle();
         
         // Width of a given frame
         public int FrameWidth;
@@ -34,10 +32,8 @@ namespace CavemanRunner
         public bool Active;
         // Determines if the animation will keep playing or deactivate after one run
         public bool Looping;
-        // Width of a given frame
-        public Vector2 Position;
 
-        public void Initialize(Texture2D texture, Vector2 position, int frameWidth, int frameHeight, int frameCount, int frametime, Color color, float scale, bool looping)
+        public void Initialize(Texture2D texture, int frameWidth, int frameHeight, int frameCount, int frametime, Color color, float scale, bool looping)
         {
             // Keep a local copy of the values passed in
             this.color = color;
@@ -48,7 +44,6 @@ namespace CavemanRunner
             this.scale = scale;
 
             Looping = looping;
-            Position = position;
             spriteStrip = texture;
 
             // Set the time to zero
@@ -89,24 +84,7 @@ namespace CavemanRunner
             }
 
             // Grab the correct frame in the image strip by multiplying the currentFrame index by the Frame width
-            sourceRect = new Rectangle(currentFrame * FrameWidth, 0, FrameWidth, FrameHeight);  
-
-            // Grab the correct frame in the image strip by multiplying the currentFrame index by the frame width
-            destinationRect = new Rectangle((int)Position.X - (int)(FrameWidth * scale) / 2,
-
-            (int)Position.Y - (int)(FrameHeight * scale) / 2,
-            (int)(FrameWidth * scale),
-            (int)(FrameHeight * scale));
-        }
-
-        // Draw the Animation Strip
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            // Only draw the animation when we are active
-            if (Active)
-            {
-                spriteBatch.Draw(spriteStrip, destinationRect, sourceRect, color);
-            }
+            sourceRect = new Rectangle(currentFrame * FrameWidth, 0, FrameWidth, FrameHeight); 
         }
     }
 }

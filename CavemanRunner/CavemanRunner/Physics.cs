@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CavemanRunner
 {
-    class Physics
+    public class Physics
     {
         public static float Gravity = 9.81f;
         public static float DefaultMass = 1f;
