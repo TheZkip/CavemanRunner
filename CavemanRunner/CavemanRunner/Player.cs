@@ -17,6 +17,7 @@ namespace CavemanRunner
         CavemanRunner.CollisionID[] collidingObjects = { CavemanRunner.CollisionID.Platform };
 
         public float Health { get { return health; } set { health = value; } }
+        public bool IsGrounded { get { return isGrounded; } }
 
         public void Update(GameTime gameTime)
         {
@@ -27,14 +28,13 @@ namespace CavemanRunner
 
             if (transform.Position.Y > 400)
             {
-                SetGrounded();
+                SetGrounded(true);
                 transform.Position = new Vector2(transform.Position.X, 400);
             }
-            else if (transform.Position.Y < 400)
-            {
-                physics.UseGravity = true;
-                isGrounded = false;
-            }
+            //else if (transform.Position.Y < 400)
+            //{
+            //    physics.UseGravity = true;
+            //}
 
             base.Update(gameTime);
             //this.physics.AddForce(-this.transform.Position.X / 10 * Vector2.UnitX);
@@ -61,12 +61,21 @@ namespace CavemanRunner
             }
         }
 
-        public void SetGrounded()
+        public void SetGrounded(bool grounded)
         {
-            physics.UseGravity = false;
-            jumping = false;
-            isGrounded = true;
-            physics.Stop();
+            if (grounded)
+            {
+                physics.UseGravity = false;
+                jumping = false;
+                isGrounded = true;
+                physics.Stop();
+            }
+            else
+            {
+                physics.UseGravity = true;
+                jumping = true;
+                isGrounded = false;
+            }
         }
 
         void StartSpecial ()

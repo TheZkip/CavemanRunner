@@ -33,7 +33,6 @@ namespace CavemanRunner
         public void Initialize ()
         {
 
-            SetAnchorPoint(AnchorPoint.Center);
         }
 
        public void SetAnchorPoint (AnchorPoint anchor)

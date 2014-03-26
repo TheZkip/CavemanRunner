@@ -23,6 +23,12 @@ namespace CavemanRunner
             this.anchor = anchor;
         }
 
+        public void SetSize (int width, int height)
+        {
+            bounds.Width = width;
+            bounds.Height = height;
+        }
+
         public void SetPosition (Vector2 position)
         {
             if (anchor == Renderer.AnchorPoint.Center)
@@ -38,7 +44,7 @@ namespace CavemanRunner
             else if (anchor == Renderer.AnchorPoint.BottomMiddle)
             {
                 bounds.X = (int)position.X;
-                bounds.Y = (int)(position.Y + bounds.Height);
+                bounds.Y = (int)(position.Y - bounds.Height);
             }
         }
 

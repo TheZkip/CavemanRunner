@@ -18,17 +18,19 @@ namespace CavemanRunner
 
         SpriteBatch spriteBatch;
 
-        public void Initialize(CavemanRunner game, Texture2D texture)
+        public void Initialize(CavemanRunner game, Texture2D texture, Renderer.AnchorPoint anchor)
         {
             this.game = game;
 
             renderer = new Renderer();
             renderer.Texture = texture;
+            renderer.SetAnchorPoint(anchor);
 
             physics = new Physics();
 
             collider = new Collider();
             collider.Bounds = renderer.Texture.Bounds;
+            collider.SetAnchorPoint(anchor);
 
             transform = new Transform();
             transform.Scale = Vector2.One * game.scaleToReference;
@@ -36,18 +38,20 @@ namespace CavemanRunner
             spriteBatch = game.spriteBatch;
         }
 
-        public void Initialize(CavemanRunner game, Texture2D texture, Vector2 velocity, int mass, bool isStatic = false)
+        public void Initialize(CavemanRunner game, Texture2D texture, Vector2 velocity, int mass,
+            bool isStatic = false, Renderer.AnchorPoint anchor = Renderer.AnchorPoint.Center)
         {
             this.game = game;
 
             renderer = new Renderer();
             renderer.Texture = texture;
-            renderer.Initialize();
+            renderer.SetAnchorPoint(anchor);
 
             physics = new Physics(mass, isStatic, velocity);
 
             collider = new Collider();
             collider.Bounds = renderer.Texture.Bounds;
+            collider.SetAnchorPoint(anchor);
 
             transform = new Transform();
             transform.Scale = Vector2.One * game.scaleToReference;

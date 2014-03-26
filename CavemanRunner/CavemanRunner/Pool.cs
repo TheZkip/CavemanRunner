@@ -28,19 +28,20 @@ namespace CavemanRunner
             }
         }
 
-        public void InitializeObjects(CavemanRunner game, Texture2D texture)
+        public void InitializeObjects(CavemanRunner game, Texture2D texture, Renderer.AnchorPoint anchor)
         {
             foreach(T o in reservedObjects)
             {
-                o.Initialize(game, texture);
+                o.Initialize(game, texture, anchor);
             }
         }
 
-        public void InitializeObjects(CavemanRunner game, Texture2D texture, Vector2 velocity, int mass, bool isStatic = false)
+        public void InitializeObjects(CavemanRunner game, Texture2D texture, Vector2 velocity, int mass,
+            bool isStatic = false, Renderer.AnchorPoint anchor = Renderer.AnchorPoint.Center)
         {
             foreach (T o in reservedObjects)
             {
-                o.Initialize(game, texture, velocity, mass, isStatic);
+                o.Initialize(game, texture, velocity, mass, isStatic, anchor);
             }
         }
 
