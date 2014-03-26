@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace CavemanRunner
 {
-    class Transform
+    public class Transform
     {
         Vector2 position;
         float rotation;

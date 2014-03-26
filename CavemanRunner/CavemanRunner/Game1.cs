@@ -84,6 +84,8 @@ namespace CavemanRunner
             player.collider.SetSize(player.renderer.Texture.Width / 4, player.renderer.Texture.Height);
             //player.renderer.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
             //player.collider.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
+            player.renderer.AddAnimation("running", player.renderer.Texture, 150, 150, 4, 100, Color.White,
+                player.transform.Scale.X, true, true);
 
             leftDrum = new Drum();
             leftDrum.Initialize(this, Content.Load<Texture2D>("Graphics/halfscreen"), Vector2.Zero, 100, true, Renderer.AnchorPoint.TopLeft);

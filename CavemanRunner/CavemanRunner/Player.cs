@@ -53,6 +53,7 @@ namespace CavemanRunner
         {
             if (isGrounded && !jumping)
             {
+                renderer.StopAnimation();
                 physics.UseGravity = true;
                 isGrounded = false;
                 jumping = true;
@@ -69,14 +70,14 @@ namespace CavemanRunner
                 jumping = false;
                 isGrounded = true;
                 physics.Stop();
+				renderer.ResumeAnimation();
             }
             else
             {
                 physics.UseGravity = true;
                 jumping = true;
                 isGrounded = false;
-            }
-        }
+            }        }
 
         void StartSpecial ()
         {
