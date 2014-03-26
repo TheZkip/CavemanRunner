@@ -144,7 +144,7 @@
     <Content Include="Content\Graphics\groundtile640.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Graphics\halfscreen.xnb">
+    <Content Include="Content\Graphics\grass.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Properties\AppManifest.xml" />
