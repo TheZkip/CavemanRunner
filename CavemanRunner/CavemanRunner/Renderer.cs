@@ -17,6 +17,7 @@ namespace CavemanRunner
 
         public Texture2D Texture { get; set; }
         public int Depth { get; set; }
+        public AnchorPoint Anchor { get { return anchorPoint; } }
 
         public Animation activeAnimation = null;
 
@@ -25,7 +26,7 @@ namespace CavemanRunner
         bool isAnimating;
         bool animateAlways;
         Vector2 renderOffset;
-        GameObject parent;
+        GameObject gameObject;
 
         public Vector2 RenderOffset
         {
@@ -33,10 +34,11 @@ namespace CavemanRunner
             set { renderOffset = value; }
         }
 
-        public void Initialize (GameObject parent)
+        public void Initialize (GameObject owner, AnchorPoint anchor)
         {
-            this.parent = parent;
+            this.gameObject = owner;
             animations = new Dictionary<string, Animation>();
+            SetAnchorPoint(anchor);
         }
 
        public void SetAnchorPoint (AnchorPoint anchor)
@@ -44,11 +46,11 @@ namespace CavemanRunner
            anchorPoint = anchor;
 
            if (anchorPoint == AnchorPoint.Center)
-               renderOffset = new Vector2((float)Texture.Width / 2, (float)Texture.Height / 2);
+               renderOffset = new Vector2((float)gameObject.collider.Bounds.Width / 2, (float)gameObject.collider.Bounds.Height / 2);
            else if (anchorPoint == AnchorPoint.TopLeft)
                renderOffset = Vector2.Zero;
            else if (anchorPoint == AnchorPoint.BottomMiddle)
-               renderOffset = new Vector2((float)Texture.Width / 2, Texture.Height);
+               renderOffset = new Vector2((float)gameObject.collider.Bounds.Width / 2, gameObject.collider.Bounds.Height);
        }
 
         public void PlayAnimation (string animationName)
@@ -76,14 +78,14 @@ namespace CavemanRunner
             spriteBatch.Begin();
             if (activeAnimation != null)
             {
-                // Removed RenderOffset from here! Is it needed?
-                spriteBatch.Draw(activeAnimation.spriteStrip, parent.transform.Position, this.activeAnimation.sourceRect,
-                    Color.White, 0f, Vector2.Zero, parent.transform.Scale, SpriteEffects.None, 0f);
+                // Removed RenderOffset from here! Is it needed? YES!
+                spriteBatch.Draw(activeAnimation.spriteStrip, gameObject.transform.Position - this.renderOffset, this.activeAnimation.sourceRect,
+                    Color.White, 0f, Vector2.Zero, gameObject.transform.Scale, SpriteEffects.None, 0f);
             }
             else
             {
-                spriteBatch.Draw(this.Texture, parent.transform.Position - this.RenderOffset, this.Texture.Bounds,
-                    Color.White, 0f, Vector2.Zero, parent.transform.Scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(this.Texture, gameObject.transform.Position - this.RenderOffset, this.Texture.Bounds,
+                    Color.White, 0f, Vector2.Zero, gameObject.transform.Scale, SpriteEffects.None, 0f);
             }
             spriteBatch.End();
         }

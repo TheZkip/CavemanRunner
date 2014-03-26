@@ -14,6 +14,8 @@ namespace CavemanRunner
     public class CavemanRunner : Game
     {
         public float scaleToReference;
+        public SpriteFont font;
+        public Texture2D halfScreen;
 
         public enum GameState
         {
@@ -73,7 +75,9 @@ namespace CavemanRunner
         /// </summary>
         protected override void LoadContent()
         {
+            font = Content.Load<SpriteFont>("Fonts/font");
             scaleToReference = (float)GraphicsDevice.Viewport.Width / 800f;
+            halfScreen = Content.Load<Texture2D>("Graphics/halfscreen");
 
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -82,24 +86,20 @@ namespace CavemanRunner
             player.Initialize(this, Content.Load<Texture2D>("Graphics/caveman"),
                 Vector2.Zero, 100, false, Renderer.AnchorPoint.BottomMiddle);
             player.collider.SetSize(player.renderer.Texture.Width / 4, player.renderer.Texture.Height);
-            //player.renderer.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
-            //player.collider.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
             player.renderer.AddAnimation("running", player.renderer.Texture, 150, 150, 4, 100, Color.White,
                 player.transform.Scale.X, true, true);
+            player.transform.Position = new Vector2(graphics.GraphicsDevice.Viewport.Width/4 * scaleToReference, 200 * scaleToReference);
+            player.renderer.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
 
             leftDrum = new Drum();
-            leftDrum.Initialize(this, Content.Load<Texture2D>("Graphics/halfscreen"), Vector2.Zero, 100, true, Renderer.AnchorPoint.TopLeft);
+            leftDrum.Initialize(this, halfScreen, Vector2.Zero, 100, true, Renderer.AnchorPoint.TopLeft);
             leftDrum.drumSide = DrumSide.side.LEFT;
-            leftDrum.transform.Position = Vector2.Zero; // new Vector2(GraphicsDevice.Viewport.Width / 4, GraphicsDevice.Viewport.Height / 4 * 3);
-            //leftDrum.renderer.SetAnchorPoint(Renderer.AnchorPoint.TopLeft);
-            //leftDrum.collider.SetAnchorPoint(Renderer.AnchorPoint.TopLeft);
+            leftDrum.transform.Position = Vector2.Zero;
             
             rightDrum = new Drum();
-            rightDrum.Initialize(this, Content.Load<Texture2D>("Graphics/halfscreen"), Vector2.Zero, 100, true, Renderer.AnchorPoint.TopLeft);
+            rightDrum.Initialize(this, halfScreen, Vector2.Zero, 100, true, Renderer.AnchorPoint.TopLeft);
             rightDrum.drumSide = DrumSide.side.RIGHT;
             rightDrum.transform.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 0f);
-            //rightDrum.renderer.SetAnchorPoint(Renderer.AnchorPoint.TopLeft);
-            //rightDrum.collider.SetAnchorPoint(Renderer.AnchorPoint.TopLeft);
 
             platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/groundtile640"), new Vector2(-1, 0), 1, true, Renderer.AnchorPoint.TopLeft);
             platformPool.ActivateNewObject().transform.Position = new Vector2(0f, GraphicsDevice.Viewport.Height
@@ -127,28 +127,31 @@ namespace CavemanRunner
         protected override void Update(GameTime gameTime)
         {
             // check collision against platforms
-            bool collisionHelper = false;
+            //bool collisionHelper = false;
             for (int i = 0; i < platformPool.Objects.Count; i++ )
             {
                 if (player.collider.CheckCollisions(platformPool.Objects[i].collider))
                 {
-                    if ((player.physics.Velocity.Y > 0 && player.transform.Position.Y <= platformPool.Objects[i].transform.Position.Y + player.physics.Velocity.Y)
-                        || player.IsGrounded)
+                    if (player.physics.Velocity.Y >= 0
+                        && player.transform.Position.Y <= platformPool.Objects[i].transform.Position.Y + player.physics.Velocity.Y + 1)
                     {
-                        collisionHelper = true;
                         player.transform.Position = new Vector2(player.transform.Position.X,
                             platformPool.Objects[i].transform.Position.Y + 1f);
+                        player.SetGrounded(true);
                         break;
                     }
                 }
-                    
+                else
+                {
+                    player.SetGrounded(false);
+                }
             }
 
             // use this until the platforms are constantly flowing from the start
             if (player.transform.Position.Y == 400)
-                collisionHelper = true;
+                player.SetGrounded(true);
 
-            player.SetGrounded(collisionHelper);
+            
                 
 
             int millis = (int)Math.Round(gameTime.TotalGameTime.TotalMilliseconds);
@@ -238,26 +241,26 @@ namespace CavemanRunner
             if (touches.Count == 1)
             {
                 spriteBatch.Begin();
-                spriteBatch.DrawString(Content.Load<SpriteFont>("Fonts/font"), touches[0].State.ToString(), Vector2.UnitY * 20, Color.Black);
+                spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 20, Color.Black);
                 spriteBatch.End();
             }
             else if (touches.Count == 2)
             {
                 spriteBatch.Begin();
-                spriteBatch.DrawString(Content.Load<SpriteFont>("Fonts/font"), touches[0].State.ToString(), Vector2.UnitY * 20, Color.Black);
-                spriteBatch.DrawString(Content.Load<SpriteFont>("Fonts/font"), touches[0].State.ToString(), Vector2.UnitY * 40, Color.Black);
+                spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 20, Color.Black);
+                spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 40, Color.Black);
                 spriteBatch.End();
             }
 
             if(hit)
             {
                 spriteBatch.Begin();
-                spriteBatch.DrawString(Content.Load<SpriteFont>("Fonts/font"), "HIT", Vector2.Zero, Color.Black);
+                spriteBatch.DrawString(font, "HIT", Vector2.Zero, Color.Black);
                 spriteBatch.End();
             }
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(Content.Load<SpriteFont>("Fonts/font"), player.transform.Position.ToString(),
+            spriteBatch.DrawString(font, player.transform.Position.ToString(),
                     new Vector2(0, 100), Color.Black);
             spriteBatch.End();
 

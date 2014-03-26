@@ -22,15 +22,17 @@ namespace CavemanRunner
         {
             this.game = game;
 
+            collider = new Collider();
+            collider.Bounds = texture.Bounds;
+
             renderer = new Renderer();
             renderer.Texture = texture;
-			renderer.SetAnchorPoint(anchor);
+            renderer.Initialize(this, anchor);
+
+            collider.Initialize(this);
+            
             if(physics == null)
                 physics = new Physics();
-
-            collider = new Collider();
-            collider.Bounds = renderer.Texture.Bounds;
-            collider.SetAnchorPoint(anchor);
 
             transform = new Transform();
             transform.Scale = Vector2.One * game.scaleToReference;
@@ -41,10 +43,9 @@ namespace CavemanRunner
         public void Initialize(CavemanRunner game, Texture2D texture, Vector2 velocity, int mass,
             bool isStatic = false, Renderer.AnchorPoint anchor = Renderer.AnchorPoint.Center)
         {
+            physics = new Physics(mass, isStatic, velocity);
 
-            renderer.SetAnchorPoint(anchor);            physics = new Physics(mass, isStatic, velocity);
-
-            this.Initialize(game, texture);
+            this.Initialize(game, texture, anchor);
         }
 
         public void Update(GameTime gameTime)
@@ -65,6 +66,7 @@ namespace CavemanRunner
 
         public void Draw(GameTime gameTime)
         {
+            collider.Draw(game);
             renderer.Draw(spriteBatch);
         }
     }

@@ -11,6 +11,7 @@ namespace CavemanRunner
         private Renderer.AnchorPoint anchor = Renderer.AnchorPoint.Center;
         private Rectangle bounds;
         private LayerMask.Layer layer;
+        private GameObject gameObject;
 
         public Rectangle Bounds
         {
@@ -18,9 +19,10 @@ namespace CavemanRunner
             set { bounds = value; }
         }
 
-        public void SetAnchorPoint (Renderer.AnchorPoint anchor)
+        public void Initialize (GameObject owner)
         {
-            this.anchor = anchor;
+            gameObject = owner;
+            anchor = gameObject.renderer.Anchor;
         }
 
         public void SetSize (int width, int height)
@@ -43,7 +45,7 @@ namespace CavemanRunner
             }
             else if (anchor == Renderer.AnchorPoint.BottomMiddle)
             {
-                bounds.X = (int)position.X;
+                bounds.X = (int)(position.X - bounds.Width / 2);
                 bounds.Y = (int)(position.Y - bounds.Height);
             }
         }
@@ -54,6 +56,13 @@ namespace CavemanRunner
                 return true;
             else
                 return false;
+        }
+
+        public void Draw (CavemanRunner game)
+        {
+            game.spriteBatch.Begin();
+            game.spriteBatch.Draw(game.halfScreen, bounds, Color.White);
+            game.spriteBatch.End();
         }
     }
 }
