@@ -6,10 +6,19 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CavemanRunner
 {
-    class Renderer
+    public class Renderer
     {
-        public Texture2D Texture { get; set; }
+        public enum AnchorPoint
+        {
+            Center = 0,
+            TopLeft,
+            BottomMiddle
+        }
 
+        public Texture2D Texture { get; set; }
+        public int Depth { get; set; }
+
+        private AnchorPoint anchorPoint = AnchorPoint.Center;
         Dictionary<string, Animation> animations;
         bool isAnimating;
         bool animateAlways;
@@ -24,8 +33,21 @@ namespace CavemanRunner
 
         public void Initialize ()
         {
-            renderOffset = new Vector2(Texture.Width / 2, Texture.Height / 2);
+
+            SetAnchorPoint(AnchorPoint.Center);
         }
+
+       public void SetAnchorPoint (AnchorPoint anchor)
+       {
+           anchorPoint = anchor;
+
+           if (anchorPoint == AnchorPoint.Center)
+               renderOffset = new Vector2((float)Texture.Width / 2, (float)Texture.Height / 2);
+           else if (anchorPoint == AnchorPoint.TopLeft)
+               renderOffset = Vector2.Zero;
+           else if (anchorPoint == AnchorPoint.BottomMiddle)
+               renderOffset = new Vector2((float)Texture.Width / 2, Texture.Height);
+       }
 
         public void PlayAnimation (string animationName)
         {

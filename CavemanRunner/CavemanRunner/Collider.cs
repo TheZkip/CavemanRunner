@@ -8,7 +8,7 @@ namespace CavemanRunner
 {
     public class Collider
     {
-
+        private Renderer.AnchorPoint anchor = Renderer.AnchorPoint.Center;
         private Rectangle bounds;
         private LayerMask.Layer layer;
 
@@ -18,10 +18,28 @@ namespace CavemanRunner
             set { bounds = value; }
         }
 
+        public void SetAnchorPoint (Renderer.AnchorPoint anchor)
+        {
+            this.anchor = anchor;
+        }
+
         public void SetPosition (Vector2 position)
         {
-            bounds.X = (int)(position.X - bounds.Width / 2);
-            bounds.Y = (int)(position.Y - bounds.Height / 2);
+            if (anchor == Renderer.AnchorPoint.Center)
+            {
+                bounds.X = (int)(position.X - bounds.Width / 2);
+                bounds.Y = (int)(position.Y - bounds.Height / 2);
+            }
+            else if (anchor == Renderer.AnchorPoint.TopLeft)
+            {
+                bounds.X = (int)position.X;
+                bounds.Y = (int)position.Y;
+            }
+            else if (anchor == Renderer.AnchorPoint.BottomMiddle)
+            {
+                bounds.X = (int)position.X;
+                bounds.Y = (int)(position.Y + bounds.Height);
+            }
         }
 
         public bool CheckCollisions (Collider other)

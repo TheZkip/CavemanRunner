@@ -25,25 +25,27 @@ namespace CavemanRunner
 
             }
 
-            if (transform.Position.Y >= 300)
+            if (transform.Position.Y > 400)
             {
-                isGrounded = true;
-                physics.Stop();
+                SetGrounded();
+                transform.Position = new Vector2(transform.Position.X, 400);
             }
-            else if (transform.Position.Y < 300)
+            else if (transform.Position.Y < 400)
             {
-                if (physics.Velocity.Y > 0)
-                    jumping = false;
-
+                physics.UseGravity = true;
                 isGrounded = false;
             }
 
-            this.physics.AddForce(-this.transform.Position.X / 10 * Vector2.UnitX);
             base.Update(gameTime);
+            //this.physics.AddForce(-this.transform.Position.X / 10 * Vector2.UnitX);
         }
 
         public void Draw(GameTime gameTime)
         {
+            game.spriteBatch.Begin();
+            game.spriteBatch.DrawString(game.Content.Load<SpriteFont>("Fonts/font"), isGrounded.ToString(), Vector2.UnitY * 60, Color.Black);
+            game.spriteBatch.End();
+
             base.Draw(gameTime);
         }
 
@@ -51,10 +53,20 @@ namespace CavemanRunner
         {
             if (isGrounded && !jumping)
             {
+                physics.UseGravity = true;
+                isGrounded = false;
                 jumping = true;
                 physics.AddForce(Vector2.UnitY * -jumpStrength);
                 game.PlayBothBongos();
             }
+        }
+
+        public void SetGrounded()
+        {
+            physics.UseGravity = false;
+            jumping = false;
+            isGrounded = true;
+            physics.Stop();
         }
 
         void StartSpecial ()
