@@ -45,7 +45,7 @@ namespace CavemanRunner
            else if (anchorPoint == AnchorPoint.TopLeft)
                renderOffset = Vector2.Zero;
            else if (anchorPoint == AnchorPoint.BottomMiddle)
-               renderOffset = new Vector2((float)Texture.Width / 2, 0f);
+               renderOffset = new Vector2((float)Texture.Width / 2, Texture.Height);
        }
 
         public void PlayAnimation (string animationName)

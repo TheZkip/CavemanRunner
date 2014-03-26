@@ -14,6 +14,7 @@ namespace CavemanRunner
         float mass;
         Vector2 velocity;
         bool isStatic;
+        bool useGravity;
         float lastUpdate = 0f;
         IList<Vector2> forcesToApply;
 
@@ -43,6 +44,7 @@ namespace CavemanRunner
         public float Mass { get { return mass; } set { mass = value; } }
         public Vector2 Velocity { get { return velocity; } set { velocity = value; } }
         public bool IsStatic { get { return isStatic; } set { isStatic = value; } }
+        public bool UseGravity { get { return useGravity; } set { useGravity = value; } }
 
         void ApplyForce (Vector2 force, GameTime gameTime)
         {
@@ -57,7 +59,7 @@ namespace CavemanRunner
 
         public void Stop ()
         {
-            velocity = Vector2.UnitX * velocity;
+            velocity = Vector2.Zero;
         }
 
         public void Update(GameTime gameTime, Vector2 position)
@@ -67,7 +69,8 @@ namespace CavemanRunner
                 return;
 
             // apply gravity
-            ApplyForce(new Vector2(0f, Gravity*mass), gameTime);
+            if (useGravity)
+                ApplyForce(new Vector2(0f, Gravity*mass), gameTime);
 
             // apply all added forces
             foreach (Vector2 force in forcesToApply)

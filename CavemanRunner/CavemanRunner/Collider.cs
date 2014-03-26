@@ -35,6 +35,11 @@ namespace CavemanRunner
                 bounds.X = (int)position.X;
                 bounds.Y = (int)position.Y;
             }
+            else if (anchor == Renderer.AnchorPoint.BottomMiddle)
+            {
+                bounds.X = (int)position.X;
+                bounds.Y = (int)(position.Y + bounds.Height);
+            }
         }
 
         public bool CheckCollisions (Collider other)

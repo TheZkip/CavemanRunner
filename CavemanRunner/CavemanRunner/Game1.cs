@@ -101,6 +101,13 @@ namespace CavemanRunner
             platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height
                 - platformPool.Objects[0].renderer.Texture.Height);
 
+            foreach(Platform platform in platformPool.Objects)
+            {
+                platform.renderer.SetAnchorPoint(Renderer.AnchorPoint.TopLeft);
+                platform.collider.SetAnchorPoint(Renderer.AnchorPoint.TopLeft);
+            }
+                
+
             click = Content.Load<SoundEffect>("Sounds/click");
             bongo1 = Content.Load<SoundEffect>("Sounds/bongo1");
             bongo2 = Content.Load<SoundEffect>("Sounds/bongo2");
