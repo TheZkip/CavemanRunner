@@ -82,6 +82,7 @@ namespace CavemanRunner
             player.Initialize(this, Content.Load<Texture2D>("Graphics/caveman"),
                 Vector2.Zero, 100);
             player.renderer.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
+            player.collider.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
 
             leftDrum = new Drum();
             leftDrum.Initialize(this, Content.Load<Texture2D>("Graphics/halfscreen"), Vector2.Zero, 100, true);
