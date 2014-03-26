@@ -14,6 +14,7 @@ namespace CavemanRunner
         bool isAnimating;
         bool animateAlways;
         Vector2 renderOffset;
+        Animation activeAnimation = null;
 
         public Vector2 RenderOffset
         {
@@ -28,9 +29,19 @@ namespace CavemanRunner
 
         public void PlayAnimation (string animationName)
         {
-            Animation animation;
-            if (animations.TryGetValue(animationName, out animation))
-                animation.Active = true;
+            if (animations.TryGetValue(animationName, out activeAnimation))
+            {
+                activeAnimation.Active = true;
+            }
+            else
+            {
+                activeAnimation = null;
+            }
+        }
+
+        public void AddAnimation(string animationName, Animation animation)
+        {
+            animations.Add(animationName, animation);
         }
     }
 }
