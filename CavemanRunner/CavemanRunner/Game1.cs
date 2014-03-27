@@ -43,6 +43,7 @@ namespace CavemanRunner
         public TouchCollection touches;
         public bool jumpDoubleTap;
         Player player;
+        GameObject dino;
         GameState gameState;
         public int tempo = 60, tolerance = 100, successCounter = 0;
         int[] clickTimes = { 0, 0, 0, 0 };
@@ -94,6 +95,12 @@ namespace CavemanRunner
                 player.transform.Scale.X, true, true);
             player.transform.Position = new Vector2(graphics.GraphicsDevice.Viewport.Width/4 * scaleToReference, 200 * scaleToReference);
             player.renderer.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
+
+            dino = new GameObject();
+            dino.Initialize(this, Content.Load<Texture2D>("Graphics/dino"), Vector2.Zero, 1000, false, Renderer.AnchorPoint.BottomMiddle);
+            dino.collider.SetSize(dino.renderer.Texture.Width, dino.renderer.Texture.Height);
+            dino.transform.Position = new Vector2(-dino.collider.Bounds.Width / 4, Platform.bottom * GraphicsDevice.Viewport.Height);
+            dino.renderer.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
 
             leftDrum = new Drum();
             leftDrum.Initialize(this, halfScreen, Vector2.Zero, 100, true, Renderer.AnchorPoint.TopLeft);
@@ -182,12 +189,17 @@ namespace CavemanRunner
                     if (CheckDrumTiming(leftDrum, gameTime))
                     {
                         successCounter++;
-                        if (successCounter % 10 == 0)
+                        if (successCounter % 20 == 0)
                         {
                             tempo = tempo + 10;
                         }
+                        dino.physics.Velocity -= Vector2.UnitX * 0.1f;
                         previousDrumSide = leftDrum.drumSide;
                         //player.physics.AddForce(Vector2.UnitX * 2000);
+                    }
+                    else
+                    {
+                        dino.physics.Velocity += Vector2.UnitX * 0.25f;
                     }
                 }
                 else if (CheckDrumHit(touches, rightDrum))
@@ -200,8 +212,13 @@ namespace CavemanRunner
                         {
                             tempo = tempo + 10;
                         }
+                        dino.physics.Velocity -= Vector2.UnitX * 0.1f;
                         previousDrumSide = rightDrum.drumSide;
                         //player.physics.AddForce(Vector2.UnitX * 2000);
+                    }
+                    else
+                    {
+                        dino.physics.Velocity += Vector2.UnitX * 0.25f;
                     }
                 }
             }
@@ -235,6 +252,7 @@ namespace CavemanRunner
             leftDrum.Update(gameTime);
             rightDrum.Update(gameTime);
             player.Update(gameTime);
+            dino.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -278,7 +296,6 @@ namespace CavemanRunner
                     new Vector2(0, 100), Color.Black);
             spriteBatch.End();
 
-            player.Draw(gameTime);
             leftDrum.Draw(gameTime);
             rightDrum.Draw(gameTime);
 
@@ -286,6 +303,9 @@ namespace CavemanRunner
             {
                 go.Draw(gameTime);
             }
+
+            dino.Draw(gameTime);
+            player.Draw(gameTime);
             base.Draw(gameTime);
         }
 
