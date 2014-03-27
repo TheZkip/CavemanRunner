@@ -13,8 +13,7 @@ namespace CavemanRunner
         public Transform transform;
         public Physics physics;
         public Collider collider;
-
-        protected CavemanRunner game;
+        public CavemanRunner game;
 
         SpriteBatch spriteBatch;
 
@@ -34,8 +33,7 @@ namespace CavemanRunner
             if(physics == null)
                 physics = new Physics();
 
-            transform = new Transform();
-            transform.Scale = Vector2.One * game.scaleToReference;
+            transform = new Transform(this);
 
             spriteBatch = game.spriteBatch;
         }
@@ -55,7 +53,8 @@ namespace CavemanRunner
                 physics.Update(gameTime, transform.Position);
 
             // update transform
-            transform.Position += physics.Velocity;
+            transform.Update();
+            //transform.Position += physics.Velocity;
 
             // set collider to position
             collider.SetPosition(transform.Position);

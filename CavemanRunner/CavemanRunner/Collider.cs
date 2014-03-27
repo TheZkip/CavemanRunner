@@ -23,12 +23,14 @@ namespace CavemanRunner
         {
             gameObject = owner;
             anchor = gameObject.renderer.Anchor;
+            bounds = new Rectangle(gameObject.renderer.Texture.Bounds.X, gameObject.renderer.Texture.Bounds.Y,
+                (int)(bounds.Width * gameObject.game.scaleToReference), (int)(bounds.Height * gameObject.game.scaleToReference));
         }
 
         public void SetSize (int width, int height)
         {
-            bounds.Width = width;
-            bounds.Height = height;
+            bounds.Width = (int)(width * gameObject.game.scaleToReference);
+            bounds.Height = (int)(height * gameObject.game.scaleToReference);
         }
 
         public void SetPosition (Vector2 position)

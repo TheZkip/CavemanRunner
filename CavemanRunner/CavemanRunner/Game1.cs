@@ -50,10 +50,12 @@ namespace CavemanRunner
         bool hit = false;
 
         Pool<Platform> platformPool;
+        Pool<ScoreCollectible> scoreCollectiblePool;
 
         public CavemanRunner()
         {
             platformPool = new Pool<Platform>(10);
+            scoreCollectiblePool = new Pool<ScoreCollectible>(5);
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
@@ -104,6 +106,8 @@ namespace CavemanRunner
             platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/groundtile640"), new Vector2(-1, 0), 1, true, Renderer.AnchorPoint.TopLeft);
             platformPool.ActivateNewObject().transform.Position = new Vector2(0f, GraphicsDevice.Viewport.Height
                 - platformPool.Objects[0].renderer.Texture.Height - 20);
+
+            scoreCollectiblePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/scoreCollectible"), Vector2.Zero, 1, true);
 
             click = Content.Load<SoundEffect>("Sounds/click");
             bongo1 = Content.Load<SoundEffect>("Sounds/bongo1");
@@ -170,9 +174,37 @@ namespace CavemanRunner
                 click.Play();
             }
 
+            CheckTapInput(gameTime);
+
+            foreach(GameObject go in platformPool.Objects)
+            {
+                go.Update(gameTime);
+                if(go.transform.Position.X < 0 - go.renderer.Texture.Width)
+                {
+                    platformPool.ReleaseObject((Platform)go);
+                    GameObject tempPlatform = platformPool.ActivateNewObject();
+                    tempPlatform.transform.Position = new Vector2(GraphicsDevice.Viewport.Width,
+                        GraphicsDevice.Viewport.Height - platformPool.Objects[0].renderer.Texture.Height - 20);
+                    return;
+                }
+                go.physics.Velocity = -Vector2.UnitX * 160 / tempo;
+            }
+
+            leftDrum.Update(gameTime);
+            rightDrum.Update(gameTime);
+            player.Update(gameTime);
+            base.Update(gameTime);
+        }
+
+        void CheckTapInput (GameTime gameTime)
+        {
             // jump on two finger tap
             touches = TouchPanel.GetState();
-            if(touches.Count == 1 && touches[0].State == TouchLocationState.Pressed)
+
+            if (!player.IsGrounded)
+                return;
+
+            if (touches.Count == 1 && touches[0].State == TouchLocationState.Pressed)
             {
                 if (CheckDrumHit(touches, leftDrum))
                 {
@@ -198,30 +230,7 @@ namespace CavemanRunner
                 && (touches[1].State == TouchLocationState.Pressed || touches[1].State == TouchLocationState.Moved))
             {
                 player.Jump();
-                jumpDoubleTap = true;
             }
-            else
-            {
-                jumpDoubleTap = false;
-            }
-
-            foreach(GameObject go in platformPool.Objects)
-            {
-                go.Update(gameTime);
-                if(go.transform.Position.X < 0 - go.renderer.Texture.Width)
-                {
-                    platformPool.ReleaseObject((Platform)go);
-                    platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width,
-                        GraphicsDevice.Viewport.Height - platformPool.Objects[0].renderer.Texture.Height - 20);
-                    return;
-                }
-                go.physics.Velocity = -Vector2.UnitX * 160 / tempo;
-            }
-
-            leftDrum.Update(gameTime);
-            rightDrum.Update(gameTime);
-            player.Update(gameTime);
-            base.Update(gameTime);
         }
 
         public void PlayBothBongos()
