@@ -15,6 +15,7 @@ namespace CavemanRunner
         public Collider collider;
         public CavemanRunner game;
 
+        
         SpriteBatch spriteBatch;
 
         public void Initialize(CavemanRunner game, Texture2D texture, Renderer.AnchorPoint anchor)

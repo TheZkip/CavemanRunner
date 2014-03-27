@@ -75,7 +75,6 @@ namespace CavemanRunner
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin();
             if (activeAnimation != null)
             {
                 // Removed RenderOffset from here! Is it needed? YES!
@@ -87,7 +86,6 @@ namespace CavemanRunner
                 spriteBatch.Draw(this.Texture, gameObject.transform.Position - this.RenderOffset, this.Texture.Bounds,
                     Color.White, 0f, Vector2.Zero, gameObject.transform.Scale, SpriteEffects.None, 0f);
             }
-            spriteBatch.End();
         }
 
         public void AddAnimation(string animationName, Texture2D animationTexture, int frameWidth, int frameHeight, int frameCount,

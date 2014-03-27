@@ -8,7 +8,7 @@ namespace CavemanRunner
     class Player : GameObject
     {
         //float jumpThreshold;
-        float jumpStrength = 40000f;
+        float jumpStrength = 60000f;
         float health = 0f;
         bool isSpecialInUse = false;
         bool isGrounded = false;
@@ -26,10 +26,10 @@ namespace CavemanRunner
 
             }
 
-            if (transform.Position.Y > 400)
+            if (transform.Position.Y > game.GraphicsDevice.Viewport.Height + collider.Bounds.Height)
             {
-                SetGrounded(true);
                 transform.Position = new Vector2(transform.Position.X, 400);
+                physics.Velocity = Vector2.Zero;
             }
             //else if (transform.Position.Y < 400)
             //{
@@ -42,9 +42,7 @@ namespace CavemanRunner
 
         public void Draw(GameTime gameTime)
         {
-            game.spriteBatch.Begin();
             game.spriteBatch.DrawString(game.font, isGrounded.ToString(), Vector2.UnitY * 60, Color.Black);
-            game.spriteBatch.End();
 
             base.Draw(gameTime);
         }

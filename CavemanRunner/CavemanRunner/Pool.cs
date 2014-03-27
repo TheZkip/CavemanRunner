@@ -33,6 +33,7 @@ namespace CavemanRunner
             foreach(T o in reservedObjects)
             {
                 o.Initialize(game, texture, anchor);
+                o.collider.SetSize(texture.Bounds.Width, texture.Bounds.Height);
             }
         }
 
@@ -42,6 +43,7 @@ namespace CavemanRunner
             foreach (T o in reservedObjects)
             {
                 o.Initialize(game, texture, velocity, mass, isStatic, anchor);
+                o.collider.SetSize(texture.Bounds.Width, texture.Bounds.Height);
             }
         }
 

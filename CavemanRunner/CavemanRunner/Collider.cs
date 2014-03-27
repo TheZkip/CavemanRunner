@@ -27,7 +27,7 @@ namespace CavemanRunner
                 (int)(bounds.Width * gameObject.game.scaleToReference), (int)(bounds.Height * gameObject.game.scaleToReference));
         }
 
-        public void SetSize (int width, int height)
+        public void SetSize(int width, int height)
         {
             bounds.Width = (int)(width * gameObject.game.scaleToReference);
             bounds.Height = (int)(height * gameObject.game.scaleToReference);
@@ -62,9 +62,7 @@ namespace CavemanRunner
 
         public void Draw (CavemanRunner game)
         {
-            game.spriteBatch.Begin();
             game.spriteBatch.Draw(game.halfScreen, bounds, Color.White);
-            game.spriteBatch.End();
         }
     }
 }

@@ -35,6 +35,7 @@ namespace CavemanRunner
             Obstacle
         }
 
+        Texture2D background0, background1, background2;
         DrumSide.side previousDrumSide;
         Drum leftDrum, rightDrum;
         SoundEffect click, bongo1, bongo2;
@@ -43,8 +44,9 @@ namespace CavemanRunner
         public TouchCollection touches;
         public bool jumpDoubleTap;
         Player player;
+        GameObject dino;
         GameState gameState;
-        public int tempo = 60, tolerance = 100;
+        public int tempo = 60, tolerance = 100, successCounter = 0;
         int[] clickTimes = { 0, 0, 0, 0 };
         float distance;
         bool hit = false;
@@ -54,6 +56,10 @@ namespace CavemanRunner
 
         public CavemanRunner()
         {
+            clickTimes[0] = 0 * 60 * 1000 / tempo;
+            clickTimes[1] = 1 * 60 * 1000 / tempo;
+            clickTimes[2] = 2 * 60 * 1000 / tempo;
+            clickTimes[3] = 3 * 60 * 1000 / tempo;
             platformPool = new Pool<Platform>(10);
             scoreCollectiblePool = new Pool<ScoreCollectible>(5);
             graphics = new GraphicsDeviceManager(this);
@@ -93,6 +99,12 @@ namespace CavemanRunner
             player.transform.Position = new Vector2(graphics.GraphicsDevice.Viewport.Width/4 * scaleToReference, 200 * scaleToReference);
             player.renderer.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
 
+            dino = new GameObject();
+            dino.Initialize(this, Content.Load<Texture2D>("Graphics/dino"), Vector2.Zero, 1000, false, Renderer.AnchorPoint.BottomMiddle);
+            dino.collider.SetSize(dino.renderer.Texture.Width, dino.renderer.Texture.Height);
+            dino.transform.Position = new Vector2(-dino.collider.Bounds.Width / 4, Platform.bottom * GraphicsDevice.Viewport.Height);
+            dino.renderer.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
+
             leftDrum = new Drum();
             leftDrum.Initialize(this, halfScreen, Vector2.Zero, 100, true, Renderer.AnchorPoint.TopLeft);
             leftDrum.drumSide = DrumSide.side.LEFT;
@@ -103,13 +115,19 @@ namespace CavemanRunner
             rightDrum.drumSide = DrumSide.side.RIGHT;
             rightDrum.transform.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 0f);
 
-            platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/groundtile640"), new Vector2(-1, 0), 1, true, Renderer.AnchorPoint.TopLeft);
-            platformPool.ActivateNewObject().transform.Position = new Vector2(0f, GraphicsDevice.Viewport.Height
-                - platformPool.Objects[0].renderer.Texture.Height - 20);
+            platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/grass"), new Vector2(-1, 0), 1, true, Renderer.AnchorPoint.TopLeft);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * 0, GraphicsDevice.Viewport.Height
+                * Platform.bottom);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * 1, GraphicsDevice.Viewport.Height
+                * Platform.bottom);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * 2, GraphicsDevice.Viewport.Height
+                * Platform.bottom);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * 3, GraphicsDevice.Viewport.Height
+                * Platform.bottom);
 
-            scoreCollectiblePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/scoreCollectible"), Vector2.Zero, 1, true);
-
-            click = Content.Load<SoundEffect>("Sounds/click");
+            scoreCollectiblePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/scoreCollectible"), Vector2.Zero, 1, true);			background0 = Content.Load<Texture2D>("Graphics/background");
+            background1 = Content.Load<Texture2D>("Graphics/trees_dark");
+            background2 = Content.Load<Texture2D>("Graphics/trees_light");            click = Content.Load<SoundEffect>("Sounds/click");
             bongo1 = Content.Load<SoundEffect>("Sounds/bongo1");
             bongo2 = Content.Load<SoundEffect>("Sounds/bongo2");
         }
@@ -153,19 +171,11 @@ namespace CavemanRunner
 
             // use this until the platforms are constantly flowing from the start
             if (player.transform.Position.Y == 400)
-                player.SetGrounded(true);
-
-            
-                
+                player.SetGrounded(true); 
 
             int millis = (int)Math.Round(gameTime.TotalGameTime.TotalMilliseconds);
 
-            if (gameTime.TotalGameTime.TotalSeconds % 10 == 0)
-            {
-                tempo += Convert.ToInt32(gameTime.TotalGameTime.TotalSeconds);
-            }
-
-            if (millis % (60 * 1000 / tempo) == 0)
+            if (clickTimes[3] < millis)
             {
                 clickTimes[0] = Convert.ToInt32(millis);
                 clickTimes[1] = clickTimes[0] + 60 * 1000 / tempo / 4;
@@ -211,8 +221,18 @@ namespace CavemanRunner
                     bongo1.Play();
                     if (CheckDrumTiming(leftDrum, gameTime))
                     {
+                        successCounter++;
+                        if (successCounter % 20 == 0)
+                        {
+                            tempo = tempo + 10;
+                        }
+                        dino.physics.Velocity -= Vector2.UnitX * 0.1f;
                         previousDrumSide = leftDrum.drumSide;
                         //player.physics.AddForce(Vector2.UnitX * 2000);
+                    }
+                    else
+                    {
+                        dino.physics.Velocity += Vector2.UnitX * 0.25f;
                     }
                 }
                 else if (CheckDrumHit(touches, rightDrum))
@@ -220,8 +240,18 @@ namespace CavemanRunner
                     bongo2.Play();
                     if (CheckDrumTiming(rightDrum, gameTime))
                     {
+                        successCounter++;
+                        if(successCounter % 10 == 0)
+                        {
+                            tempo = tempo + 10;
+                        }
+                        dino.physics.Velocity -= Vector2.UnitX * 0.1f;
                         previousDrumSide = rightDrum.drumSide;
                         //player.physics.AddForce(Vector2.UnitX * 2000);
+                    }
+                    else
+                    {
+                        dino.physics.Velocity += Vector2.UnitX * 0.25f;
                     }
                 }
             }
@@ -231,6 +261,7 @@ namespace CavemanRunner
             {
                 player.Jump();
             }
+			dino.Update(gameTime);
         }
 
         public void PlayBothBongos()
@@ -246,34 +277,30 @@ namespace CavemanRunner
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            spriteBatch.Begin();
+
+            spriteBatch.Draw(background0, Vector2.Zero, Color.White);
+            spriteBatch.Draw(background1, Vector2.Zero, Color.White);
+            spriteBatch.Draw(background2, Vector2.Zero, Color.White);
 
             if (touches.Count == 1)
             {
-                spriteBatch.Begin();
                 spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 20, Color.Black);
-                spriteBatch.End();
             }
             else if (touches.Count == 2)
             {
-                spriteBatch.Begin();
                 spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 20, Color.Black);
                 spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 40, Color.Black);
-                spriteBatch.End();
             }
 
             if(hit)
             {
-                spriteBatch.Begin();
                 spriteBatch.DrawString(font, "HIT", Vector2.Zero, Color.Black);
-                spriteBatch.End();
             }
 
-            spriteBatch.Begin();
             spriteBatch.DrawString(font, player.transform.Position.ToString(),
                     new Vector2(0, 100), Color.Black);
-            spriteBatch.End();
 
-            player.Draw(gameTime);
             leftDrum.Draw(gameTime);
             rightDrum.Draw(gameTime);
 
@@ -281,6 +308,10 @@ namespace CavemanRunner
             {
                 go.Draw(gameTime);
             }
+
+            dino.Draw(gameTime);
+            player.Draw(gameTime);
+            spriteBatch.End();
             base.Draw(gameTime);
         }
 
