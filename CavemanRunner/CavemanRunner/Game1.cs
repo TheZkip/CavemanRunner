@@ -35,6 +35,7 @@ namespace CavemanRunner
             Obstacle
         }
 
+        Texture2D background0, background1, background2;
         DrumSide.side previousDrumSide;
         Drum leftDrum, rightDrum;
         SoundEffect click, bongo1, bongo2;
@@ -121,6 +122,10 @@ namespace CavemanRunner
                 * Platform.bottom);
             platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * 3, GraphicsDevice.Viewport.Height
                 * Platform.bottom);
+
+            background0 = Content.Load<Texture2D>("Graphics/background");
+            background1 = Content.Load<Texture2D>("Graphics/trees_dark");
+            background2 = Content.Load<Texture2D>("Graphics/trees_light");
 
             click = Content.Load<SoundEffect>("Sounds/click");
             bongo1 = Content.Load<SoundEffect>("Sounds/bongo1");
@@ -269,32 +274,29 @@ namespace CavemanRunner
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            spriteBatch.Begin();
+
+            spriteBatch.Draw(background0, Vector2.Zero, Color.White);
+            spriteBatch.Draw(background1, Vector2.Zero, Color.White);
+            spriteBatch.Draw(background2, Vector2.Zero, Color.White);
 
             if (touches.Count == 1)
             {
-                spriteBatch.Begin();
                 spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 20, Color.Black);
-                spriteBatch.End();
             }
             else if (touches.Count == 2)
             {
-                spriteBatch.Begin();
                 spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 20, Color.Black);
                 spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 40, Color.Black);
-                spriteBatch.End();
             }
 
             if(hit)
             {
-                spriteBatch.Begin();
                 spriteBatch.DrawString(font, "HIT", Vector2.Zero, Color.Black);
-                spriteBatch.End();
             }
 
-            spriteBatch.Begin();
             spriteBatch.DrawString(font, player.transform.Position.ToString(),
                     new Vector2(0, 100), Color.Black);
-            spriteBatch.End();
 
             leftDrum.Draw(gameTime);
             rightDrum.Draw(gameTime);
@@ -306,6 +308,7 @@ namespace CavemanRunner
 
             dino.Draw(gameTime);
             player.Draw(gameTime);
+            spriteBatch.End();
             base.Draw(gameTime);
         }
 

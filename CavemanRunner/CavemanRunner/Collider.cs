@@ -60,9 +60,7 @@ namespace CavemanRunner
 
         public void Draw (CavemanRunner game)
         {
-            game.spriteBatch.Begin();
             game.spriteBatch.Draw(game.halfScreen, bounds, Color.White);
-            game.spriteBatch.End();
         }
     }
 }

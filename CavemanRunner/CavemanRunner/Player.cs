@@ -42,9 +42,7 @@ namespace CavemanRunner
 
         public void Draw(GameTime gameTime)
         {
-            game.spriteBatch.Begin();
             game.spriteBatch.DrawString(game.font, isGrounded.ToString(), Vector2.UnitY * 60, Color.Black);
-            game.spriteBatch.End();
 
             base.Draw(gameTime);
         }
