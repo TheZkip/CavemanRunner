@@ -14,7 +14,7 @@ namespace CavemanRunner
         public Physics physics;
         public Collider collider;
 
-        protected CavemanRunner game;
+        public CavemanRunner game;
 
         SpriteBatch spriteBatch;
 

@@ -44,7 +44,7 @@ namespace CavemanRunner
         public bool jumpDoubleTap;
         Player player;
         GameState gameState;
-        public int tempo = 60, tolerance = 100;
+        public int tempo = 60, tolerance = 100, successCounter = 0;
         int[] clickTimes = { 0, 0, 0, 0 };
         float distance;
         bool hit = false;
@@ -53,6 +53,10 @@ namespace CavemanRunner
 
         public CavemanRunner()
         {
+            clickTimes[0] = 0 * 60 * 1000 / tempo;
+            clickTimes[1] = 1 * 60 * 1000 / tempo;
+            clickTimes[2] = 2 * 60 * 1000 / tempo;
+            clickTimes[3] = 3 * 60 * 1000 / tempo;
             platformPool = new Pool<Platform>(10);
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -101,9 +105,15 @@ namespace CavemanRunner
             rightDrum.drumSide = DrumSide.side.RIGHT;
             rightDrum.transform.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 0f);
 
-            platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/groundtile640"), new Vector2(-1, 0), 1, true, Renderer.AnchorPoint.TopLeft);
-            platformPool.ActivateNewObject().transform.Position = new Vector2(0f, GraphicsDevice.Viewport.Height
-                - platformPool.Objects[0].renderer.Texture.Height - 20);
+            platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/grass"), new Vector2(-1, 0), 1, true, Renderer.AnchorPoint.TopLeft);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * 0, GraphicsDevice.Viewport.Height
+                * Platform.bottom);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * 1, GraphicsDevice.Viewport.Height
+                * Platform.bottom);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * 2, GraphicsDevice.Viewport.Height
+                * Platform.bottom);
+            platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * 3, GraphicsDevice.Viewport.Height
+                * Platform.bottom);
 
             click = Content.Load<SoundEffect>("Sounds/click");
             bongo1 = Content.Load<SoundEffect>("Sounds/bongo1");
@@ -149,19 +159,11 @@ namespace CavemanRunner
 
             // use this until the platforms are constantly flowing from the start
             if (player.transform.Position.Y == 400)
-                player.SetGrounded(true);
-
-            
-                
+                player.SetGrounded(true); 
 
             int millis = (int)Math.Round(gameTime.TotalGameTime.TotalMilliseconds);
 
-            if (gameTime.TotalGameTime.TotalSeconds % 10 == 0)
-            {
-                tempo += Convert.ToInt32(gameTime.TotalGameTime.TotalSeconds);
-            }
-
-            if (millis % (60 * 1000 / tempo) == 0)
+            if (clickTimes[3] < millis)
             {
                 clickTimes[0] = Convert.ToInt32(millis);
                 clickTimes[1] = clickTimes[0] + 60 * 1000 / tempo / 4;
@@ -179,6 +181,11 @@ namespace CavemanRunner
                     bongo1.Play();
                     if (CheckDrumTiming(leftDrum, gameTime))
                     {
+                        successCounter++;
+                        if (successCounter % 10 == 0)
+                        {
+                            tempo = tempo + 10;
+                        }
                         previousDrumSide = leftDrum.drumSide;
                         //player.physics.AddForce(Vector2.UnitX * 2000);
                     }
@@ -188,6 +195,11 @@ namespace CavemanRunner
                     bongo2.Play();
                     if (CheckDrumTiming(rightDrum, gameTime))
                     {
+                        successCounter++;
+                        if(successCounter % 10 == 0)
+                        {
+                            tempo = tempo + 10;
+                        }
                         previousDrumSide = rightDrum.drumSide;
                         //player.physics.AddForce(Vector2.UnitX * 2000);
                     }
@@ -208,11 +220,13 @@ namespace CavemanRunner
             foreach(GameObject go in platformPool.Objects)
             {
                 go.Update(gameTime);
-                if(go.transform.Position.X < 0 - go.renderer.Texture.Width)
+                if(go.transform.Position.X < 0 - go.collider.Bounds.Width)
                 {
+                    platformPool.ActivateNewObject();
+                    platformPool.Objects[platformPool.Objects.Count - 1].transform.Position = new Vector2(platformPool.Objects[platformPool.Objects.Count - 2].transform.Position.X
+                         + platformPool.Objects[platformPool.Objects.Count - 2].collider.Bounds.Width,
+                         Platform.RandomHeight(this.GraphicsDevice.Viewport.Height));
                     platformPool.ReleaseObject((Platform)go);
-                    platformPool.ActivateNewObject().transform.Position = new Vector2(GraphicsDevice.Viewport.Width,
-                        GraphicsDevice.Viewport.Height - platformPool.Objects[0].renderer.Texture.Height - 20);
                     return;
                 }
                 go.physics.Velocity = -Vector2.UnitX * 160 / tempo;

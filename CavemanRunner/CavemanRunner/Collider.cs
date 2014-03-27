@@ -25,10 +25,10 @@ namespace CavemanRunner
             anchor = gameObject.renderer.Anchor;
         }
 
-        public void SetSize (int width, int height)
+        public void SetSize(int width, int height)
         {
-            bounds.Width = width;
-            bounds.Height = height;
+            bounds.Width = (int)(width * gameObject.game.scaleToReference);
+            bounds.Height = (int)(height * gameObject.game.scaleToReference);
         }
 
         public void SetPosition (Vector2 position)
