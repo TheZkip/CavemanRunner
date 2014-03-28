@@ -46,7 +46,7 @@ namespace CavemanRunner
         Player player;
         GameObject dino;
         GameState gameState;
-        public int tempo = 60, tolerance = 100, successCounter = 0;
+        public int currentTempo, startingTempo = 100, maxTempo = 200, tolerance = 100, successCounter = 0;
         int[] clickTimes = { 0, 0, 0, 0 };
         float distance;
         bool hit = false;
@@ -56,10 +56,10 @@ namespace CavemanRunner
 
         public CavemanRunner()
         {
-            clickTimes[0] = 0 * 60 * 1000 / tempo;
-            clickTimes[1] = 1 * 60 * 1000 / tempo;
-            clickTimes[2] = 2 * 60 * 1000 / tempo;
-            clickTimes[3] = 3 * 60 * 1000 / tempo;
+            clickTimes[0] = 0 * 60 * 1000 / currentTempo;
+            clickTimes[1] = 1 * 60 * 1000 / currentTempo;
+            clickTimes[2] = 2 * 60 * 1000 / currentTempo;
+            clickTimes[3] = 3 * 60 * 1000 / currentTempo;
             platformPool = new Pool<Platform>(10);
             scoreCollectiblePool = new Pool<ScoreCollectible>(5);
             graphics = new GraphicsDeviceManager(this);
@@ -125,9 +125,11 @@ namespace CavemanRunner
             platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * 3, GraphicsDevice.Viewport.Height
                 * Platform.bottom);
 
-            scoreCollectiblePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/scoreCollectible"), Vector2.Zero, 1, true);			background0 = Content.Load<Texture2D>("Graphics/background");
+            scoreCollectiblePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/scoreCollectible"), Vector2.Zero, 1, true);
+            background0 = Content.Load<Texture2D>("Graphics/background");
             background1 = Content.Load<Texture2D>("Graphics/trees_dark");
-            background2 = Content.Load<Texture2D>("Graphics/trees_light");            click = Content.Load<SoundEffect>("Sounds/click");
+            background2 = Content.Load<Texture2D>("Graphics/trees_light");
+            click = Content.Load<SoundEffect>("Sounds/click");
             bongo1 = Content.Load<SoundEffect>("Sounds/bongo1");
             bongo2 = Content.Load<SoundEffect>("Sounds/bongo2");
         }
@@ -169,19 +171,20 @@ namespace CavemanRunner
                 }
             }
 
-            // use this until the platforms are constantly flowing from the start
-            if (player.transform.Position.Y == 400)
-                player.SetGrounded(true); 
+            //// use this until the platforms are constantly flowing from the start
+            //if (player.transform.Position.Y == 400)
+            //    player.SetGrounded(true); 
 
             int millis = (int)Math.Round(gameTime.TotalGameTime.TotalMilliseconds);
 
             if (clickTimes[3] < millis)
             {
                 clickTimes[0] = Convert.ToInt32(millis);
-                clickTimes[1] = clickTimes[0] + 60 * 1000 / tempo / 4;
-                clickTimes[2] = clickTimes[1] + 60 * 1000 / tempo / 4;
-                clickTimes[3] = clickTimes[2] + 60 * 1000 / tempo / 4;
+                clickTimes[1] = clickTimes[0] + 60 * 1000 / currentTempo / 4;
+                clickTimes[2] = clickTimes[1] + 60 * 1000 / currentTempo / 4;
+                clickTimes[3] = clickTimes[2] + 60 * 1000 / currentTempo / 4;
                 click.Play();
+                dino.physics.Velocity += Vector2.UnitX * 0.03f;
             }
 
             CheckTapInput(gameTime);
@@ -194,16 +197,40 @@ namespace CavemanRunner
                     platformPool.ReleaseObject((Platform)go);
                     GameObject tempPlatform = platformPool.ActivateNewObject();
                     tempPlatform.transform.Position = new Vector2(GraphicsDevice.Viewport.Width,
-                        GraphicsDevice.Viewport.Height - platformPool.Objects[0].renderer.Texture.Height - 20);
+                        Platform.RandomHeight(GraphicsDevice.Viewport.Height));
                     return;
                 }
-                go.physics.Velocity = -Vector2.UnitX * 160 / tempo;
+                go.physics.Velocity = -Vector2.UnitX * 160 / currentTempo;
             }
 
             leftDrum.Update(gameTime);
             rightDrum.Update(gameTime);
             player.Update(gameTime);
+            
+            dino.Update(gameTime);
+            if (dino.transform.Position.X < -dino.collider.Bounds.Width / 4)
+            {
+                dino.transform.Position = new Vector2(-dino.collider.Bounds.Width / 4, Platform.bottom * GraphicsDevice.Viewport.Height);
+                dino.physics.Velocity = Vector2.Zero;
+            }
+
+            float dinoSpeedHelper = 0;
+            dinoSpeedHelper = Math.Max(dino.physics.Velocity.X, -1f);
+            dinoSpeedHelper = Math.Min(dino.physics.Velocity.X, 1f);
+            dino.physics.Velocity = Vector2.UnitX * dinoSpeedHelper;
+
             base.Update(gameTime);
+
+            CheckGameEnd();
+        }
+
+        void CheckGameEnd ()
+        {
+            if (dino.transform.Position.X >= player.transform.Position.X)
+            {
+                dino.transform.Position = new Vector2(-dino.collider.Bounds.Width / 4, Platform.bottom * GraphicsDevice.Viewport.Height);
+                dino.physics.Velocity = Vector2.Zero;
+            }
         }
 
         void CheckTapInput (GameTime gameTime)
@@ -222,17 +249,18 @@ namespace CavemanRunner
                     if (CheckDrumTiming(leftDrum, gameTime))
                     {
                         successCounter++;
-                        if (successCounter % 20 == 0)
+                        if (successCounter % 10 == 0)
                         {
-                            tempo = tempo + 10;
+                            currentTempo += 2;
+                            successCounter = 0;
                         }
-                        dino.physics.Velocity -= Vector2.UnitX * 0.1f;
+                        dino.physics.Velocity -= Vector2.UnitX * 0.05f;
                         previousDrumSide = leftDrum.drumSide;
                         //player.physics.AddForce(Vector2.UnitX * 2000);
                     }
                     else
                     {
-                        dino.physics.Velocity += Vector2.UnitX * 0.25f;
+                        dino.physics.Velocity += Vector2.UnitX * 0.08f;
                     }
                 }
                 else if (CheckDrumHit(touches, rightDrum))
@@ -243,7 +271,8 @@ namespace CavemanRunner
                         successCounter++;
                         if(successCounter % 10 == 0)
                         {
-                            tempo = tempo + 10;
+                            currentTempo += 2;
+                            successCounter = 0;
                         }
                         dino.physics.Velocity -= Vector2.UnitX * 0.1f;
                         previousDrumSide = rightDrum.drumSide;
@@ -261,7 +290,6 @@ namespace CavemanRunner
             {
                 player.Jump();
             }
-			dino.Update(gameTime);
         }
 
         public void PlayBothBongos()
@@ -283,6 +311,8 @@ namespace CavemanRunner
             spriteBatch.Draw(background1, Vector2.Zero, Color.White);
             spriteBatch.Draw(background2, Vector2.Zero, Color.White);
 
+            dino.Draw(gameTime);
+
             if (touches.Count == 1)
             {
                 spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 20, Color.Black);
@@ -298,8 +328,10 @@ namespace CavemanRunner
                 spriteBatch.DrawString(font, "HIT", Vector2.Zero, Color.Black);
             }
 
-            spriteBatch.DrawString(font, player.transform.Position.ToString(),
+            spriteBatch.DrawString(font, "Player: " + player.transform.Position.ToString(),
                     new Vector2(0, 100), Color.Black);
+            spriteBatch.DrawString(font, "Dino: " + dino.transform.Position.ToString(),
+                   new Vector2(0, 120), Color.Black);
 
             leftDrum.Draw(gameTime);
             rightDrum.Draw(gameTime);
@@ -309,7 +341,6 @@ namespace CavemanRunner
                 go.Draw(gameTime);
             }
 
-            dino.Draw(gameTime);
             player.Draw(gameTime);
             spriteBatch.End();
             base.Draw(gameTime);

@@ -8,9 +8,10 @@ namespace CavemanRunner
 {
     public class Physics
     {
-        public static float Gravity = 9.81f;
+        public static float Gravity = 20f;
         public static float DefaultMass = 1f;
 
+        GameObject gameObject;
         float mass;
         Vector2 velocity;
         bool isStatic;
@@ -39,6 +40,11 @@ namespace CavemanRunner
             this.isStatic = isStatic;
             forcesToApply = new List<Vector2>();
             this.Velocity = velocity;
+        }
+
+        public void Initialize (GameObject gameObject)
+        {
+            this.gameObject = gameObject;
         }
 
         public float Mass { get { return mass; } set { mass = value; } }
@@ -70,7 +76,13 @@ namespace CavemanRunner
 
             // apply gravity
             if (useGravity)
-                ApplyForce(new Vector2(0f, Gravity*mass), gameTime);
+            {
+                if (gameObject is Player && gameObject.physics.velocity.Y > 0)
+                    ApplyForce(new Vector2(0f, Gravity * mass * 3), gameTime);
+                else
+                    ApplyForce(new Vector2(0f, Gravity * mass), gameTime);
+            }
+                
 
             // apply all added forces
             foreach (Vector2 force in forcesToApply)

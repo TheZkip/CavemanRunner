@@ -32,7 +32,10 @@ namespace CavemanRunner
             collider.Initialize(this);
             
             if(physics == null)
+            {
                 physics = new Physics();
+                physics.Initialize(this);
+            }
 
             transform = new Transform(this);
 
@@ -43,6 +46,7 @@ namespace CavemanRunner
             bool isStatic = false, Renderer.AnchorPoint anchor = Renderer.AnchorPoint.Center)
         {
             physics = new Physics(mass, isStatic, velocity);
+            physics.Initialize(this);
 
             this.Initialize(game, texture, anchor);
         }

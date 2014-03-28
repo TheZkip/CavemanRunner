@@ -8,7 +8,7 @@ namespace CavemanRunner
     class Player : GameObject
     {
         //float jumpThreshold;
-        float jumpStrength = 60000f;
+        float jumpStrength = 90000f;
         float health = 0f;
         bool isSpecialInUse = false;
         bool isGrounded = false;
@@ -26,16 +26,12 @@ namespace CavemanRunner
 
             }
 
-            if (transform.Position.Y > game.GraphicsDevice.Viewport.Height + collider.Bounds.Height)
+            if (transform.Position.Y > game.GraphicsDevice.Viewport.Height + collider.Bounds.Height * 2)
             {
-                transform.Position = new Vector2(transform.Position.X, 400);
+                transform.Position = new Vector2(transform.Position.X, 0);
                 physics.Velocity = Vector2.Zero;
             }
-            //else if (transform.Position.Y < 400)
-            //{
-            //    physics.UseGravity = true;
-            //}
-
+            
             base.Update(gameTime);
             //this.physics.AddForce(-this.transform.Position.X / 10 * Vector2.UnitX);
         }
