@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input.Touch;
 using MonoGame.Framework.WindowsPhone;
 using CavemanRunner.Resources;
+using System.IO;
 
 namespace CavemanRunner
 {
@@ -23,8 +24,11 @@ namespace CavemanRunner
         {
             InitializeComponent();
 
-            _game = XamlGame<CavemanRunner>.Create("", this);
+            var str = Application.GetResourceStream(new Uri("pattern.txt", UriKind.Relative));
+            StreamReader reader = new StreamReader(str.Stream);
 
+            _game = XamlGame<CavemanRunner>.Create("", this);
+            _game.GenerateLevelFromString(reader.ReadToEnd());
             // Sample code to localize the ApplicationBar
             //BuildLocalizedApplicationBar();
         }
@@ -41,6 +45,11 @@ namespace CavemanRunner
 
             //    e.Complete();
             //}
+        }
+
+        protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
+        {
+            base.OnBackKeyPress(e);
         }
     }
 }

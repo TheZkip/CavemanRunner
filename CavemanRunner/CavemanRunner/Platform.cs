@@ -8,22 +8,23 @@ namespace CavemanRunner
 {
     class Platform : GameObject
     {
-        public static float top = 2 / 8f;
-        public static float middle = 1 / 2f;
-        public static float bottom = 7 / 9f;
         private static Random r = new Random();
+        private Texture2D[] textures;
+
+        public static float bottom = 7 / 9f;
+        public static float middle = 1 / 2f;
+        public static float top = 1 / 4f;
 
         public void Initialize(CavemanRunner game, Texture2D texture, Renderer.AnchorPoint anchor)
         {
-            bottom = game.GraphicsDevice.Viewport.Height - this.collider.Bounds.Height;
-            top = game.GraphicsDevice.Viewport.Height / 4;
-            middle = bottom - top;
+            base.Initialize(game, texture, anchor);
         }
 
-        public void Initialize(CavemanRunner game, Texture2D texture, Vector2 velocity, int mass,
+        public void Initialize(CavemanRunner game, Texture2D[] textureArray, Vector2 velocity, int mass,
             bool isStatic = false, Renderer.AnchorPoint anchor = Renderer.AnchorPoint.Center)
         {
-            this.Initialize(game, texture, anchor);
+            textures = new Texture2D[textureArray.Length];
+            this.Initialize(game, textures[0], anchor);
         }
 
         public void Update(GameTime gameTime)

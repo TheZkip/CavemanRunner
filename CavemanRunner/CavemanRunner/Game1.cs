@@ -5,6 +5,10 @@ using Microsoft.Xna.Framework.Input.Touch;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace CavemanRunner
 {
@@ -34,6 +38,8 @@ namespace CavemanRunner
             ScoreCollectible,
             Obstacle
         }
+        int patternIterator = 0; // needs to be implemented in better manner 
+        List<int[]> pattern = new List<int[]>();
 
         Texture2D background0, background1, background2;
         DrumSide.side previousDrumSide;
@@ -49,19 +55,22 @@ namespace CavemanRunner
         public int currentTempo, startingTempo = 100, maxTempo = 200, tolerance = 100, successCounter = 0;
         int[] clickTimes = { 0, 0, 0, 0 };
         float distance;
-        bool hit = false;
+        bool hit = false, newPlatforms = false;
 
+        List<Platform> removePlatforms;
         Pool<Platform> platformPool;
         Pool<ScoreCollectible> scoreCollectiblePool;
 
         public CavemanRunner()
         {
+            currentTempo = startingTempo;
             clickTimes[0] = 0 * 60 * 1000 / currentTempo;
             clickTimes[1] = 1 * 60 * 1000 / currentTempo;
             clickTimes[2] = 2 * 60 * 1000 / currentTempo;
             clickTimes[3] = 3 * 60 * 1000 / currentTempo;
-            platformPool = new Pool<Platform>(10);
+            platformPool = new Pool<Platform>(20);
             scoreCollectiblePool = new Pool<ScoreCollectible>(5);
+            removePlatforms = new List<Platform>();
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
@@ -115,15 +124,13 @@ namespace CavemanRunner
             rightDrum.drumSide = DrumSide.side.RIGHT;
             rightDrum.transform.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 0f);
 
-            platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/grass"), new Vector2(-1, 0), 1, true, Renderer.AnchorPoint.TopLeft);
-            platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * 0, GraphicsDevice.Viewport.Height
-                * Platform.bottom);
-            platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * 1, GraphicsDevice.Viewport.Height
-                * Platform.bottom);
-            platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * 2, GraphicsDevice.Viewport.Height
-                * Platform.bottom);
-            platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * 3, GraphicsDevice.Viewport.Height
-                * Platform.bottom);
+            platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/grass_fourth"), new Vector2(-1, 0), 1, true, Renderer.AnchorPoint.TopLeft);
+            
+            for (int i = 0; i < 8; i++)
+            {
+                platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * i, GraphicsDevice.Viewport.Height
+                    * Platform.bottom);
+            }
 
             scoreCollectiblePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/scoreCollectible"), Vector2.Zero, 1, true);
             background0 = Content.Load<Texture2D>("Graphics/background");
@@ -132,6 +139,29 @@ namespace CavemanRunner
             click = Content.Load<SoundEffect>("Sounds/click");
             bongo1 = Content.Load<SoundEffect>("Sounds/bongo1");
             bongo2 = Content.Load<SoundEffect>("Sounds/bongo2");
+        }
+
+        public void GenerateLevelFromString(string level)
+        {
+            StringReader reader = new StringReader(level);
+            int[] row = new int[3];
+            int i = 0;
+            while(reader.Peek() >= 0)
+            {
+                char temp = (char)reader.Read();
+                if(Char.IsDigit(temp))
+                {
+                    row[i] = Convert.ToInt32(Char.GetNumericValue(temp));
+                    i++;
+                    Console.WriteLine(row);
+                }
+                else if(temp == '\n')
+                {
+                    pattern.Add(row);
+                    row = new int[3];
+                    i = 0;
+                }
+            }
         }
 
         /// <summary>
@@ -194,13 +224,33 @@ namespace CavemanRunner
                 go.Update(gameTime);
                 if(go.transform.Position.X < 0 - go.renderer.Texture.Width)
                 {
-                    platformPool.ReleaseObject((Platform)go);
-                    GameObject tempPlatform = platformPool.ActivateNewObject();
-                    tempPlatform.transform.Position = new Vector2(GraphicsDevice.Viewport.Width,
-                        Platform.RandomHeight(GraphicsDevice.Viewport.Height));
-                    return;
+                    removePlatforms.Add((Platform)go);
                 }
                 go.physics.Velocity = -Vector2.UnitX * 160 / currentTempo;
+            }
+
+            if (platformPool.Objects[0].transform.Position.X < 0
+                - platformPool.Objects[0].renderer.Texture.Width)
+            {
+                newPlatforms = true;
+            }
+            else
+            {
+                newPlatforms = false;
+            }
+
+            if(removePlatforms.Count > 0)
+            {
+                foreach(Platform p in removePlatforms)
+                {
+                    platformPool.ReleaseObject(p);
+                }
+                removePlatforms.Clear();
+            }
+
+            if(newPlatforms)
+            {
+                SpawnNewPlatforms();
             }
 
             leftDrum.Update(gameTime);
@@ -222,6 +272,36 @@ namespace CavemanRunner
             base.Update(gameTime);
 
             CheckGameEnd();
+        }
+
+        void SpawnNewPlatforms()
+        {
+            Vector2 newPosition = new Vector2();
+            newPosition.X = platformPool.Objects[platformPool.Objects.Count - 1].transform.Position.X
+                        + platformPool.Objects[platformPool.Objects.Count - 1].collider.Bounds.Width;
+            for (int i = 0; i < pattern[patternIterator].Length; i++)
+            {
+                if (pattern[patternIterator][i] == 1)
+                {
+                    if(i == 0)
+                        newPosition.Y = GraphicsDevice.Viewport.Height * Platform.bottom;
+                    else if(i == 1)
+                        newPosition.Y = GraphicsDevice.Viewport.Height * Platform.middle;
+                    else if(i == 2)
+                        newPosition.Y = GraphicsDevice.Viewport.Height * Platform.top;
+
+                    GameObject tempPlatform = platformPool.ActivateNewObject();
+                    
+                    tempPlatform.transform.Position = newPosition;
+                }
+            }
+
+            patternIterator++;
+
+            if(patternIterator == pattern.Count)
+            {
+                patternIterator = 0;
+            }
         }
 
         void CheckGameEnd ()
