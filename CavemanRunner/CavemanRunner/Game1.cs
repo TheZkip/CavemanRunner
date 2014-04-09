@@ -13,6 +13,8 @@ namespace CavemanRunner
     /// </summary>
     public class CavemanRunner : Game
     {
+        public static float toleranceAtStartingTempo = 100;
+
         public float scaleToReference;
         public SpriteFont font;
         public Texture2D halfScreen;
@@ -35,7 +37,9 @@ namespace CavemanRunner
             Obstacle
         }
 
-        Texture2D background0, background1, background2;
+        Texture2D background;
+        ParallaxingBackground treesBack = new ParallaxingBackground();
+        ParallaxingBackground treesFront = new ParallaxingBackground();
         DrumSide.side previousDrumSide;
         Drum leftDrum, rightDrum;
         SoundEffect click, bongo1, bongo2;
@@ -46,7 +50,7 @@ namespace CavemanRunner
         Player player;
         GameObject dino;
         GameState gameState;
-        public int currentTempo, startingTempo = 100, maxTempo = 200, tolerance = 100, successCounter = 0;
+        public int currentTempo, startingTempo = 100, maxTempo = 200, currentTolerance, successCounter = 0;
         int[] clickTimes = { 0, 0, 0, 0 };
         float distance;
         bool hit = false;
@@ -56,6 +60,7 @@ namespace CavemanRunner
 
         public CavemanRunner()
         {
+            currentTempo = startingTempo;
             clickTimes[0] = 0 * 60 * 1000 / currentTempo;
             clickTimes[1] = 1 * 60 * 1000 / currentTempo;
             clickTimes[2] = 2 * 60 * 1000 / currentTempo;
@@ -94,8 +99,8 @@ namespace CavemanRunner
             player.Initialize(this, Content.Load<Texture2D>("Graphics/caveman"),
                 Vector2.Zero, 100, false, Renderer.AnchorPoint.BottomMiddle);
             player.collider.SetSize(player.renderer.Texture.Width / 4, player.renderer.Texture.Height);
-            player.renderer.AddAnimation("running", player.renderer.Texture, 150, 150, 4, 100, Color.White,
-                player.transform.Scale.X, true, true);
+            player.renderer.AddAnimation("running", player.renderer.Texture, 150, 150, 4, startingTempo * 2, Color.White,
+                player.transform.Scale.X, true, true, true);
             player.transform.Position = new Vector2(graphics.GraphicsDevice.Viewport.Width/4 * scaleToReference, 200 * scaleToReference);
             player.renderer.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
 
@@ -126,9 +131,13 @@ namespace CavemanRunner
                 * Platform.bottom);
 
             scoreCollectiblePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/scoreCollectible"), Vector2.Zero, 1, true);
-            background0 = Content.Load<Texture2D>("Graphics/background");
-            background1 = Content.Load<Texture2D>("Graphics/trees_dark");
-            background2 = Content.Load<Texture2D>("Graphics/trees_light");
+            
+            // background texture and parallaxers
+            background = Content.Load<Texture2D>("Graphics/background");
+            treesBack.Initialize(Content, "Graphics/trees_dark", GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 1);
+            treesFront.Initialize(Content, "Graphics/trees_light", GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 2);
+            
+            // sound effects
             click = Content.Load<SoundEffect>("Sounds/click");
             bongo1 = Content.Load<SoundEffect>("Sounds/bongo1");
             bongo2 = Content.Load<SoundEffect>("Sounds/bongo2");
@@ -150,6 +159,13 @@ namespace CavemanRunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            // recalculate touch tolerance
+            currentTolerance = (int)(toleranceAtStartingTempo * ((float)startingTempo / (float)currentTempo));
+
+            // update background
+            treesBack.Update(gameTime);
+            treesFront.Update(gameTime);
+
             // check collision against platforms
             //bool collisionHelper = false;
             for (int i = 0; i < platformPool.Objects.Count; i++ )
@@ -171,10 +187,6 @@ namespace CavemanRunner
                 }
             }
 
-            //// use this until the platforms are constantly flowing from the start
-            //if (player.transform.Position.Y == 400)
-            //    player.SetGrounded(true); 
-
             int millis = (int)Math.Round(gameTime.TotalGameTime.TotalMilliseconds);
 
             if (clickTimes[3] < millis)
@@ -194,13 +206,15 @@ namespace CavemanRunner
                 go.Update(gameTime);
                 if(go.transform.Position.X < 0 - go.renderer.Texture.Width)
                 {
-                    platformPool.ReleaseObject((Platform)go);
                     GameObject tempPlatform = platformPool.ActivateNewObject();
-                    tempPlatform.transform.Position = new Vector2(GraphicsDevice.Viewport.Width,
-                        Platform.RandomHeight(GraphicsDevice.Viewport.Height));
+                    tempPlatform.transform.Position = new Vector2(platformPool.Objects[platformPool.Objects.Count - 2].transform.Position.X
+                         + platformPool.Objects[platformPool.Objects.Count - 2].collider.Bounds.Width,
+                         Platform.RandomHeight(this.GraphicsDevice.Viewport.Height));
+                    platformPool.ReleaseObject((Platform)go);
                     return;
                 }
-                go.physics.Velocity = -Vector2.UnitX * 160 / currentTempo;
+                go.physics.Velocity = Vector2.UnitX * ((-1 * GraphicsDevice.Viewport.Width) / (4 * 60f / (float)currentTempo))
+                    * gameTime.ElapsedGameTime.Milliseconds * 0.001f;
             }
 
             leftDrum.Update(gameTime);
@@ -290,6 +304,10 @@ namespace CavemanRunner
             {
                 player.Jump();
             }
+
+            // clamp tempo to maxTempo
+            if (currentTempo > maxTempo)
+                currentTempo = maxTempo;
         }
 
         public void PlayBothBongos()
@@ -307,9 +325,9 @@ namespace CavemanRunner
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
 
-            spriteBatch.Draw(background0, Vector2.Zero, Color.White);
-            spriteBatch.Draw(background1, Vector2.Zero, Color.White);
-            spriteBatch.Draw(background2, Vector2.Zero, Color.White);
+            spriteBatch.Draw(background, Vector2.Zero, Color.White);
+            treesBack.Draw(spriteBatch);
+            treesFront.Draw(spriteBatch);
 
             dino.Draw(gameTime);
 
@@ -332,6 +350,10 @@ namespace CavemanRunner
                     new Vector2(0, 100), Color.Black);
             spriteBatch.DrawString(font, "Dino: " + dino.transform.Position.ToString(),
                    new Vector2(0, 120), Color.Black);
+            spriteBatch.DrawString(font, "Current tempo: " + currentTempo.ToString(),
+                   new Vector2(0, 140), Color.Black);
+            spriteBatch.DrawString(font, "Current tolerance: " + currentTolerance.ToString(),
+                  new Vector2(0, 160), Color.Black);
 
             leftDrum.Draw(gameTime);
             rightDrum.Draw(gameTime);
@@ -351,12 +373,12 @@ namespace CavemanRunner
             hit = false;
             if (drum.drumSide != previousDrumSide)
             {
-                if (gameTime.TotalGameTime.TotalMilliseconds <= clickTimes[0] + tolerance ||
-                    gameTime.TotalGameTime.TotalMilliseconds >= clickTimes[3] - tolerance ||
-                    (gameTime.TotalGameTime.TotalMilliseconds >= clickTimes[1] - tolerance &&
-                    gameTime.TotalGameTime.TotalMilliseconds <= clickTimes[1] + tolerance) ||
-                    (gameTime.TotalGameTime.TotalMilliseconds >= clickTimes[2] - tolerance &&
-                    gameTime.TotalGameTime.TotalMilliseconds <= clickTimes[2] + tolerance))
+                if (gameTime.TotalGameTime.TotalMilliseconds <= clickTimes[0] + currentTolerance ||
+                    gameTime.TotalGameTime.TotalMilliseconds >= clickTimes[3] - currentTolerance ||
+                    (gameTime.TotalGameTime.TotalMilliseconds >= clickTimes[1] - currentTolerance &&
+                    gameTime.TotalGameTime.TotalMilliseconds <= clickTimes[1] + currentTolerance) ||
+                    (gameTime.TotalGameTime.TotalMilliseconds >= clickTimes[2] - currentTolerance &&
+                    gameTime.TotalGameTime.TotalMilliseconds <= clickTimes[2] + currentTolerance))
                 {
                     hit = true;
                 }

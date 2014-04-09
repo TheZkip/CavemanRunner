@@ -7,6 +7,8 @@ namespace CavemanRunner
 {
     public class Animation
     {
+        // the "owner" Renderer of this animation
+        Renderer renderer;
         // The image representing the collection of images used for animation
         public Texture2D spriteStrip;
         // The scale used to display the sprite strip
@@ -21,9 +23,9 @@ namespace CavemanRunner
         int currentFrame;
         // The color of the frame we will be displaying
         Color color;
+
         // The area of the image strip we want to display
         public Rectangle sourceRect = new Rectangle();
-        
         // Width of a given frame
         public int FrameWidth;
         // Height of a given frame
@@ -33,18 +35,24 @@ namespace CavemanRunner
         // Determines if the animation will keep playing or deactivate after one run
         public bool Looping;
 
-        public void Initialize(Texture2D texture, int frameWidth, int frameHeight, int frameCount, int frametime, Color color, float scale, bool looping)
+        // Tie this animation to tempo?
+        public bool TieToTempo = false;
+        private int originalFrameTime;
+
+        public void Initialize(Renderer renderer, Texture2D texture, int frameWidth, int frameHeight, int frameCount, int frametime, Color color, float scale, bool looping, bool tieToTempo)
         {
             // Keep a local copy of the values passed in
+            this.renderer = renderer;
             this.color = color;
             this.FrameWidth = frameWidth;
             this.FrameHeight = frameHeight;
             this.frameCount = frameCount;
-            this.frameTime = frametime;
+            this.frameTime = originalFrameTime = frametime;
             this.scale = scale;
 
             Looping = looping;
             spriteStrip = texture;
+            TieToTempo = tieToTempo;
 
             // Set the time to zero
             elapsedTime = 0;
@@ -57,7 +65,11 @@ namespace CavemanRunner
         public void Update(GameTime gameTime)
         {
             // Do not update the game if we are not active
-            if (Active == false) return;
+            if (!Active) return;
+
+            // update frameTime if the animation is tied to tempo
+            if (TieToTempo)
+                frameTime = (int)((float)renderer.gameObject.game.startingTempo / renderer.gameObject.game.currentTempo * originalFrameTime);
             
             // Update the elapsed time
             elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -75,7 +87,7 @@ namespace CavemanRunner
                     currentFrame = 0;
 
                     // If we are not looping deactivate the animation
-                    if (Looping == false)
+                    if (!Looping)
                         Active = false;
                 }
 

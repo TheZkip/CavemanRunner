@@ -71,7 +71,8 @@ namespace CavemanRunner
                 physics.UseGravity = true;
                 jumping = true;
                 isGrounded = false;
-            }        }
+            }
+        }
 
         void StartSpecial ()
         {

@@ -26,7 +26,7 @@ namespace CavemanRunner
         bool isAnimating;
         bool animateAlways;
         Vector2 renderOffset;
-        GameObject gameObject;
+        public GameObject gameObject;
 
         public Vector2 RenderOffset
         {
@@ -89,10 +89,10 @@ namespace CavemanRunner
         }
 
         public void AddAnimation(string animationName, Texture2D animationTexture, int frameWidth, int frameHeight, int frameCount,
-            int frametime, Color color, float scale, bool looping, bool setActive = false)
+            int frametime, Color color, float scale, bool looping, bool setActive = false, bool tieToTempo = false)
         {
             Animation newAnimation = new Animation();
-            newAnimation.Initialize(animationTexture, frameWidth, frameHeight, frameCount, frametime, color, scale, looping);
+            newAnimation.Initialize(this, animationTexture, frameWidth, frameHeight, frameCount, frametime, color, scale, looping, tieToTempo);
             newAnimation.Active = setActive;
             animations.Add(animationName, newAnimation);
             if(setActive)
