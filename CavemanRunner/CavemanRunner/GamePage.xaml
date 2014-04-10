@@ -19,7 +19,7 @@
         <DrawingSurface x:Name="XnaSurface"/>
 
 		<!-- Media element for audio -->
-        <MediaElement></MediaElement>
+        <MediaElement LostFocus="OnLostFocus" GotFocus="OnGotFocus"></MediaElement>
 		
         <!-- LOCALIZATION NOTE:
             To localize the displayed strings copy their values to appropriately named

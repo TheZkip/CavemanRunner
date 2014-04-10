@@ -630,5 +630,15 @@ namespace CavemanRunner
             }
             return result;
         }
+
+        public void PauseGame()
+        {
+            gameState = GameState.Paused;
+        }
+
+        public void UnpauseGame()
+        {
+            gameState = GameState.InGame;
+        }
     }
 }

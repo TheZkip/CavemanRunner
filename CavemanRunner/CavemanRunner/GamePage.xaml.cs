@@ -57,6 +57,28 @@ namespace CavemanRunner
         protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
         {
             base.OnBackKeyPress(e);
+            _game.PauseGame();
+            MessageBoxResult result = MessageBox.Show("Exit the game?!", "", MessageBoxButton.OKCancel);
+            if(result == MessageBoxResult.OK)
+            {
+                Application.Current.Terminate();
+            } else if(result == MessageBoxResult.Cancel)
+            {
+                _game.UnpauseGame();
+            } else
+            {
+
+            }
+        }
+
+        private void OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            _game.PauseGame();
+        }
+
+        private void OnGotFocus(object sender, RoutedEventArgs e)
+        {
+            _game.UnpauseGame();
         }
     }
 }
