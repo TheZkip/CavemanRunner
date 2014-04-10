@@ -24,13 +24,20 @@ namespace CavemanRunner
         {
             InitializeComponent();
 
-            var str = Application.GetResourceStream(new Uri("pattern.txt", UriKind.Relative));
-            StreamReader reader = new StreamReader(str.Stream);
-
             _game = XamlGame<CavemanRunner>.Create("", this);
-            _game.GenerateLevelFromString(reader.ReadToEnd());
+            LoadPattern(new Uri("Patterns/pattern1.txt", UriKind.Relative));
+            LoadPattern(new Uri("Patterns/pattern2.txt", UriKind.Relative));
+            LoadPattern(new Uri("Patterns/pattern3.txt", UriKind.Relative));
+            LoadPattern(new Uri("Patterns/pattern4.txt", UriKind.Relative));
             // Sample code to localize the ApplicationBar
             //BuildLocalizedApplicationBar();
+        }
+
+        public void LoadPattern(Uri fileUri)
+        {
+            var str = Application.GetResourceStream(fileUri);
+            StreamReader reader = new StreamReader(str.Stream);
+            _game.GenerateLevelFromString(reader.ReadToEnd());
         }
 
         private void CavemanRunner_ManipulationStarted(object sender, System.Windows.Input.ManipulationStartedEventArgs e)

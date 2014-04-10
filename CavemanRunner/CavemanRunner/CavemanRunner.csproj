@@ -168,10 +168,14 @@
     <Content Include="Content\Graphics\grass_half.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Graphics\obstacle.xnb">
+    <Content Include="Content\Graphics\trex.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Graphics\trex.xnb">
+    <Content Include="Patterns\pattern2.txt" />
+    <Content Include="Patterns\pattern4.txt" />
+    <Content Include="Patterns\pattern3.txt" />
+    <Content Include="Patterns\pattern1.txt" />
+    <Content Include="Content\Graphics\obstacle.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Properties\AppManifest.xml" />

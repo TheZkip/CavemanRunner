@@ -41,6 +41,7 @@ namespace CavemanRunner
             Obstacle
         }
         int patternIterator = 0; // needs to be implemented in better manner 
+        List<List<int[]>> patterns = new List<List<int[]>>();
         List<int[]> pattern = new List<int[]>();
 
         Texture2D background;
@@ -147,7 +148,7 @@ namespace CavemanRunner
             // init pools for platorms, "club" collectibles and obstacles
             platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/grass_fourth"), new Vector2(-1, 0), 1, true, Renderer.AnchorPoint.TopLeft);
             
-            for (int i = 0; i < 16; i++)
+            for (int i = 0; i < 10; i++)
             {
                 platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * i, GraphicsDevice.Viewport.Height
                     * Platform.bottom);
@@ -170,6 +171,7 @@ namespace CavemanRunner
         public void GenerateLevelFromString(string level)
         {
             StringReader reader = new StringReader(level);
+            List<int[]> tempList = new List<int[]>();
             int[] row = new int[5];
             int i = 0;
             while(reader.Peek() >= 0)
@@ -183,11 +185,20 @@ namespace CavemanRunner
                 }
                 else if(temp == '\n')
                 {
-                    pattern.Add(row);
+                    tempList.Add(row);
                     row = new int[5];
                     i = 0;
                 }
             }
+            patterns.Add(tempList);
+            pattern = patterns[0];
+        }
+
+        void ChoosePatternByRandom()
+        {
+            Random r = new Random();
+            int rnd = r.Next(0, patterns.Count);
+            pattern = patterns[rnd];
         }
 
         /// <summary>
@@ -309,6 +320,7 @@ namespace CavemanRunner
 
             if(patternIterator == pattern.Count)
             {
+                ChoosePatternByRandom();
                 patternIterator = 0;
             }
         }
