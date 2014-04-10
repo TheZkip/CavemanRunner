@@ -8,7 +8,7 @@ namespace CavemanRunner
 {
     class Obstacle : GameObject
     {
-        bool isDestructible;
+        bool isDestructible = true;
 
         public bool IsDestructible
         {

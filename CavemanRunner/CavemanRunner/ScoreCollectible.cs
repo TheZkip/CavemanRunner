@@ -11,7 +11,7 @@ namespace CavemanRunner
         int value;
         public int Value { get { return this.value; } set { this.value = value; } }
 
-        public void Do ()
+        public void Collect ()
         {
 
         }

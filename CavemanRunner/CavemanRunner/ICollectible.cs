@@ -5,6 +5,6 @@ namespace CavemanRunner
 {
     interface ICollectible
     {
-        void Do();
+        void Collect();
     }
 }

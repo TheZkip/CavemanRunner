@@ -10,6 +10,7 @@ namespace CavemanRunner
         //float jumpThreshold;
         float jumpStrength = 90000f;
         float health = 0f;
+        int currentClubs = 0, maxClubs = 3;
         bool isSpecialInUse = false;
         bool isGrounded = false;
         bool jumping = false;
@@ -17,7 +18,9 @@ namespace CavemanRunner
         CavemanRunner.CollisionID[] collidingObjects = { CavemanRunner.CollisionID.Platform };
 
         public float Health { get { return health; } set { health = value; } }
+        public int CurrentClubs { get { return currentClubs; } }
         public bool IsGrounded { get { return isGrounded; } }
+        public bool HasClub { get { return currentClubs > 0; } }
 
         public void Update(GameTime gameTime)
         {
@@ -74,16 +77,16 @@ namespace CavemanRunner
             }
         }
 
-        void StartSpecial ()
+        public void AddClub ()
         {
-            // TODO: change animation
-            isSpecialInUse = true;
+            if (++currentClubs > maxClubs)
+                currentClubs = maxClubs;
         }
 
-        void StopSpecial ()
+        public void RemoveClub ()
         {
-            // TODO: change animation
-            isSpecialInUse = false;
+            if (--currentClubs < 0)
+                currentClubs = 0;
         }
 
         public void Move(int amount)

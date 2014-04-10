@@ -55,15 +55,21 @@ namespace CavemanRunner
         public bool jumpDoubleTap;
         Player player;
         GameObject dino;
-        GameState gameState;
+        GameState gameState = GameState.InGame;
         public int currentTempo, startingTempo = 100, maxTempo = 200, currentTolerance, successCounter = 0;
         int[] clickTimes = { 0, 0, 0, 0 };
         float distance;
         bool hit = false, newPlatforms = false;
 
-        List<Platform> removePlatforms;
+        // pools
         Pool<Platform> platformPool;
-        Pool<ScoreCollectible> scoreCollectiblePool;
+        List<Platform> removePlatforms;
+
+        Pool<HealthCollectible> healthCollectiblePool;
+        List<HealthCollectible> removeHealthCollectibles;
+
+        Pool<Obstacle> obstaclePool;
+        List<Obstacle> removeObstacles;
 
         public CavemanRunner()
         {
@@ -73,8 +79,11 @@ namespace CavemanRunner
             clickTimes[2] = 2 * 60 * 1000 / currentTempo;
             clickTimes[3] = 3 * 60 * 1000 / currentTempo;
             platformPool = new Pool<Platform>(20);
-            scoreCollectiblePool = new Pool<ScoreCollectible>(5);
+            healthCollectiblePool = new Pool<HealthCollectible>(5);
+            obstaclePool = new Pool<Obstacle>(10);
             removePlatforms = new List<Platform>();
+            removeObstacles = new List<Obstacle>();
+            removeHealthCollectibles = new List<HealthCollectible>();
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
@@ -128,6 +137,7 @@ namespace CavemanRunner
             rightDrum.drumSide = DrumSide.side.RIGHT;
             rightDrum.transform.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 0f);
 
+            // init pools for platorms, "club" collectibles and obstacles
             platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/grass_fourth"), new Vector2(-1, 0), 1, true, Renderer.AnchorPoint.TopLeft);
             
             for (int i = 0; i < 8; i++)
@@ -136,12 +146,13 @@ namespace CavemanRunner
                     * Platform.bottom);
             }
 
-            scoreCollectiblePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/scoreCollectible"), Vector2.Zero, 1, true);
-            
+            healthCollectiblePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/scoreCollectible"), Vector2.Zero, 1, true, Renderer.AnchorPoint.BottomMiddle);
+            obstaclePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/scoreCollectible"), Vector2.Zero, 1, true, Renderer.AnchorPoint.BottomMiddle);
+
             // background texture and parallaxers
             background = Content.Load<Texture2D>("Graphics/background");
-            treesBack.Initialize(Content, "Graphics/trees_dark", GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 1);
-            treesFront.Initialize(Content, "Graphics/trees_light", GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 2);
+            treesBack.Initialize(Content, "Graphics/trees_dark", GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 10);
+            treesFront.Initialize(Content, "Graphics/trees_light", GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 20);
             
             // sound effects
             click = Content.Load<SoundEffect>("Sounds/click");
@@ -188,33 +199,20 @@ namespace CavemanRunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            // bail out if we are not in game
+            if (gameState != GameState.InGame)
+                return;
+
             // recalculate touch tolerance
-            currentTolerance = (int)(toleranceAtStartingTempo * ((float)startingTempo / (float)currentTempo));
+            currentTolerance = (int)((toleranceAtStartingTempo / 2) * ((float)startingTempo / (float)currentTempo));
 
             // update background
             treesBack.Update(gameTime);
             treesFront.Update(gameTime);
 
-            // check collision against platforms
-            //bool collisionHelper = false;
-            for (int i = 0; i < platformPool.Objects.Count; i++ )
-            {
-                if (player.collider.CheckCollisions(platformPool.Objects[i].collider))
-                {
-                    if (player.physics.Velocity.Y >= 0
-                        && player.transform.Position.Y <= platformPool.Objects[i].transform.Position.Y + player.physics.Velocity.Y + 1)
-                    {
-                        player.transform.Position = new Vector2(player.transform.Position.X,
-                            platformPool.Objects[i].transform.Position.Y + 1f);
-                        player.SetGrounded(true);
-                        break;
-                    }
-                }
-                else
-                {
-                    player.SetGrounded(false);
-                }
-            }
+            CheckPlatformCollision();
+            CheckObstacleCollision();
+            CheckCollectibleCollision();
 
             int millis = (int)Math.Round(gameTime.TotalGameTime.TotalMilliseconds);
 
@@ -230,44 +228,7 @@ namespace CavemanRunner
 
             CheckTapInput(gameTime);
 
-            foreach(GameObject go in platformPool.Objects)
-            {
-                go.Update(gameTime);
-                if(go.transform.Position.X < 0 - go.renderer.Texture.Width)
-                {
-removePlatforms.Add((Platform)go);
-
-
-
-
-                }
-                go.physics.Velocity = Vector2.UnitX * ((-1 * GraphicsDevice.Viewport.Width) / (4 * 60f / (float)currentTempo))
-                    * gameTime.ElapsedGameTime.Milliseconds * 0.001f;
-            }
-
-            if (platformPool.Objects[0].transform.Position.X < 0
-                - platformPool.Objects[0].renderer.Texture.Width)
-            {
-                newPlatforms = true;
-            }
-            else
-            {
-                newPlatforms = false;
-            }
-
-            if(removePlatforms.Count > 0)
-            {
-                foreach(Platform p in removePlatforms)
-                {
-                    platformPool.ReleaseObject(p);
-                }
-                removePlatforms.Clear();
-            }
-
-            if(newPlatforms)
-            {
-                SpawnNewPlatforms();
-            }
+            RemoveObjectsOutOfView(gameTime);
 
             leftDrum.Update(gameTime);
             rightDrum.Update(gameTime);
@@ -287,7 +248,7 @@ removePlatforms.Add((Platform)go);
 
             base.Update(gameTime);
 
-            CheckGameEnd();
+            CheckDinoCollision();
         }
 
         void SpawnNewPlatforms()
@@ -295,10 +256,12 @@ removePlatforms.Add((Platform)go);
             Vector2 newPosition = new Vector2();
             newPosition.X = platformPool.Objects[platformPool.Objects.Count - 1].transform.Position.X
                         + platformPool.Objects[platformPool.Objects.Count - 1].collider.Bounds.Width;
+
             for (int i = 0; i < pattern[patternIterator].Length; i++)
             {
-                if (pattern[patternIterator][i] == 1)
+                if (pattern[patternIterator][i] > 0)
                 {
+                    // create the platform
                     if(i == 0)
                         newPosition.Y = GraphicsDevice.Viewport.Height * Platform.bottom;
                     else if(i == 1)
@@ -309,6 +272,22 @@ removePlatforms.Add((Platform)go);
                     GameObject tempPlatform = platformPool.ActivateNewObject();
                     
                     tempPlatform.transform.Position = newPosition;
+
+                    // create an obstacle if pattern[patternIterator][i] == 2
+                    if (pattern[patternIterator][i] == 2)
+                    {
+                        Obstacle tempObstacle = obstaclePool.ActivateNewObject() as Obstacle;
+                        tempObstacle.transform.Parent = tempPlatform.transform;
+                        tempObstacle.transform.LocalPosition = new Vector2(tempPlatform.renderer.Texture.Width / 2, -5);
+                    }
+
+                    // create a collectible if 3
+                    else if (pattern[patternIterator][i] == 3)
+                    {
+                        HealthCollectible tempHealth = healthCollectiblePool.ActivateNewObject() as HealthCollectible;
+                        tempHealth.transform.Parent = tempPlatform.transform;
+                        tempHealth.transform.LocalPosition = new Vector2(tempPlatform.renderer.Texture.Width / 2, -5);
+                    }
                 }
             }
 
@@ -320,12 +299,142 @@ removePlatforms.Add((Platform)go);
             }
         }
 
-        void CheckGameEnd ()
+        void CheckDinoCollision ()
         {
             if (dino.transform.Position.X >= player.transform.Position.X)
             {
                 dino.transform.Position = new Vector2(-dino.collider.Bounds.Width / 4, Platform.bottom * GraphicsDevice.Viewport.Height);
                 dino.physics.Velocity = Vector2.Zero;
+            }
+        }
+
+        void CheckPlatformCollision ()
+        {
+            // check collision against platforms
+            for (int i = 0; i < platformPool.Objects.Count; i++)
+            {
+                if (player.collider.CheckCollisions(platformPool.Objects[i].collider))
+                {
+                    if (player.physics.Velocity.Y >= 0
+                        && player.transform.Position.Y <= platformPool.Objects[i].transform.Position.Y + player.physics.Velocity.Y + 1)
+                    {
+                        player.transform.Position = new Vector2(player.transform.Position.X,
+                            platformPool.Objects[i].transform.Position.Y + 1f);
+                        player.SetGrounded(true);
+                        break;
+                    }
+                }
+                else
+                {
+                    player.SetGrounded(false);
+                }
+            }
+        }
+
+        void CheckObstacleCollision ()
+        {
+            // check collision against Obstacles
+            for (int i = 0; i < obstaclePool.Objects.Count; i++)
+            {
+                if (player.collider.CheckCollisions(obstaclePool.Objects[i].collider))
+                {
+                    if (player.HasClub)
+                    {
+                        player.RemoveClub();
+                        obstaclePool.ReleaseObject(obstaclePool.Objects[i]);
+                        // TODO: play sound effect, visual effect etc
+                    }
+                    else
+                    {
+                        foreach (Platform p in platformPool.Objects)
+                            p.physics.Velocity = Vector2.Zero;
+                        // end game
+                    }
+                }
+            }
+        }
+
+        void CheckCollectibleCollision ()
+        {
+            // check collision against collectibles
+            for (int i = 0; i < healthCollectiblePool.Objects.Count; i++)
+            {
+                if (player.collider.CheckCollisions(healthCollectiblePool.Objects[i].collider))
+                {
+                    (healthCollectiblePool.Objects[i] as HealthCollectible).Collect();
+                    healthCollectiblePool.ReleaseObject(healthCollectiblePool.Objects[i]);
+                    player.AddClub();
+                    // TODO: play sound effect, visual effect etc
+                }
+            }
+        }
+
+        void RemoveObjectsOutOfView (GameTime gameTime)
+        {
+            // remove platforms that are out of view
+            foreach (GameObject go in platformPool.Objects)
+            {
+                go.Update(gameTime);
+
+                if (go.transform.Position.X < 0 - go.renderer.Texture.Width)
+                    removePlatforms.Add((Platform)go);
+
+                go.physics.Velocity = Vector2.UnitX * ((-1 * GraphicsDevice.Viewport.Width) / (4 * 60f / (float)currentTempo))
+                    * gameTime.ElapsedGameTime.Milliseconds * 0.001f;
+            }
+
+            CreateNewPlatforms();
+
+            foreach (Platform p in removePlatforms)
+                platformPool.ReleaseObject(p);
+            
+            removePlatforms.Clear();
+
+            // remove obstacles that are out of view
+            foreach (GameObject go in obstaclePool.Objects)
+            {
+                go.Update(gameTime);
+
+                if (go.transform.Position.X < 0 - go.renderer.Texture.Width)
+                    removeObstacles.Add((Obstacle)go);
+            }
+
+            foreach (Obstacle o in removeObstacles)
+                obstaclePool.ReleaseObject(o);
+
+            removeObstacles.Clear();
+
+            // remove collectibles that are out of view
+            foreach (GameObject go in healthCollectiblePool.Objects)
+            {
+                go.Update(gameTime);
+                
+                if (go.transform.Position.X < 0 - go.renderer.Texture.Width)
+                    removeHealthCollectibles.Add((HealthCollectible)go);
+            }
+
+            foreach (HealthCollectible h in removeHealthCollectibles)
+                healthCollectiblePool.ReleaseObject(h);
+
+            removeHealthCollectibles.Clear();
+        }
+
+        void CreateNewPlatforms ()
+        {
+            // make new platforms
+            if (platformPool.Objects[0].transform.Position.X < 0
+                - platformPool.Objects[0].renderer.Texture.Width)
+            {
+                newPlatforms = true;
+            }
+            else
+            {
+                newPlatforms = false;
+            }
+
+            if (newPlatforms)
+            {
+                SpawnNewPlatforms();
             }
         }
 
@@ -350,7 +459,7 @@ removePlatforms.Add((Platform)go);
                             currentTempo += 2;
                             successCounter = 0;
                         }
-                        dino.physics.Velocity -= Vector2.UnitX * 0.05f;
+                        dino.physics.Velocity -= Vector2.UnitX * 0.1f;
                         previousDrumSide = leftDrum.drumSide;
                         //player.physics.AddForce(Vector2.UnitX * 2000);
                     }
@@ -436,14 +545,18 @@ removePlatforms.Add((Platform)go);
                    new Vector2(0, 140), Color.Black);
             spriteBatch.DrawString(font, "Current tolerance: " + currentTolerance.ToString(),
                   new Vector2(0, 160), Color.Black);
+            spriteBatch.DrawString(font, "Current clubs: " + player.CurrentClubs.ToString(),
+                 new Vector2(0, 180), Color.Black);
 
             leftDrum.Draw(gameTime);
             rightDrum.Draw(gameTime);
 
             foreach (GameObject go in platformPool.Objects)
-            {
                 go.Draw(gameTime);
-            }
+            foreach (GameObject go in healthCollectiblePool.Objects)
+                go.Draw(gameTime);
+            foreach (GameObject go in obstaclePool.Objects)
+                go.Draw(gameTime);
 
             player.Draw(gameTime);
             spriteBatch.End();

@@ -8,10 +8,10 @@ namespace CavemanRunner
 {
     class HealthCollectible : GameObject, ICollectible
     {
-        int value;
+        int value = 1;
         public int Value { get { return this.value; } set { this.value = value; } }
 
-        public void Do ()
+        public void Collect ()
         {
 
         }
