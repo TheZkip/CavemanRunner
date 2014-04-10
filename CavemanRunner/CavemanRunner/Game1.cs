@@ -17,7 +17,7 @@ namespace CavemanRunner
     /// </summary>
     public class CavemanRunner : Game
     {
-        public static float toleranceAtStartingTempo = 100;
+        public static float toleranceAtStartingTempo = 80;
 
         public float scaleToReference;
         public SpriteFont font;
@@ -56,7 +56,7 @@ namespace CavemanRunner
         Player player;
         GameObject dino;
         GameState gameState = GameState.InGame;
-        public int currentTempo, startingTempo = 100, maxTempo = 200, currentTolerance, successCounter = 0;
+        public int currentTempo, startingTempo = 80, maxTempo = 220, currentTolerance, successCounter = 0;
         int[] clickTimes = { 0, 0, 0, 0 };
         float distance;
         bool hit = false, newPlatforms = false;
@@ -78,9 +78,9 @@ namespace CavemanRunner
             clickTimes[1] = 1 * 60 * 1000 / currentTempo;
             clickTimes[2] = 2 * 60 * 1000 / currentTempo;
             clickTimes[3] = 3 * 60 * 1000 / currentTempo;
-            platformPool = new Pool<Platform>(20);
-            healthCollectiblePool = new Pool<HealthCollectible>(5);
-            obstaclePool = new Pool<Obstacle>(10);
+            platformPool = new Pool<Platform>(40);
+            healthCollectiblePool = new Pool<HealthCollectible>(10);
+            obstaclePool = new Pool<Obstacle>(20);
             removePlatforms = new List<Platform>();
             removeObstacles = new List<Obstacle>();
             removeHealthCollectibles = new List<HealthCollectible>();
@@ -116,38 +116,45 @@ namespace CavemanRunner
             player.Initialize(this, Content.Load<Texture2D>("Graphics/caveman"),
                 Vector2.Zero, 100, false, Renderer.AnchorPoint.BottomMiddle);
             player.collider.SetSize(player.renderer.Texture.Width / 4, player.renderer.Texture.Height);
-            player.renderer.AddAnimation("running", player.renderer.Texture, 150, 150, 4, startingTempo * 2, Color.White,
+            player.renderer.AddAnimation("running", player.renderer.Texture, 75, 75, 4, startingTempo * 2, Color.White,
                 player.transform.Scale.X, true, true, true);
             player.transform.Position = new Vector2(graphics.GraphicsDevice.Viewport.Width/4 * scaleToReference, 200 * scaleToReference);
             player.renderer.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
 
             dino = new GameObject();
-            dino.Initialize(this, Content.Load<Texture2D>("Graphics/dino"), Vector2.Zero, 1000, false, Renderer.AnchorPoint.BottomMiddle);
-            dino.collider.SetSize(dino.renderer.Texture.Width, dino.renderer.Texture.Height);
+            dino.Initialize(this, Content.Load<Texture2D>("Graphics/trex"),
+                Vector2.Zero, 1000, false, Renderer.AnchorPoint.BottomMiddle);
+            dino.collider.SetSize(dino.renderer.Texture.Width / 4, dino.renderer.Texture.Height);
+            dino.renderer.AddAnimation("running", dino.renderer.Texture, 436, 300, 4, startingTempo * 2, Color.White,
+                dino.transform.Scale.X, true, true, true);
             dino.transform.Position = new Vector2(-dino.collider.Bounds.Width / 4, Platform.bottom * GraphicsDevice.Viewport.Height);
             dino.renderer.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
 
             leftDrum = new Drum();
             leftDrum.Initialize(this, halfScreen, Vector2.Zero, 100, true, Renderer.AnchorPoint.TopLeft);
+            leftDrum.transform.Scale = Vector2.One * 2;
+            leftDrum.collider.SetSize(leftDrum.renderer.Texture.Width, leftDrum.renderer.Texture.Height);
             leftDrum.drumSide = DrumSide.side.LEFT;
             leftDrum.transform.Position = Vector2.Zero;
             
             rightDrum = new Drum();
             rightDrum.Initialize(this, halfScreen, Vector2.Zero, 100, true, Renderer.AnchorPoint.TopLeft);
+            rightDrum.transform.Scale = Vector2.One * 2;
+            rightDrum.collider.SetSize(rightDrum.renderer.Texture.Width * 2, rightDrum.renderer.Texture.Height * 2);
             rightDrum.drumSide = DrumSide.side.RIGHT;
             rightDrum.transform.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 0f);
 
             // init pools for platorms, "club" collectibles and obstacles
             platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/grass_fourth"), new Vector2(-1, 0), 1, true, Renderer.AnchorPoint.TopLeft);
             
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 16; i++)
             {
                 platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * i, GraphicsDevice.Viewport.Height
                     * Platform.bottom);
             }
 
             healthCollectiblePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/scoreCollectible"), Vector2.Zero, 1, true, Renderer.AnchorPoint.BottomMiddle);
-            obstaclePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/scoreCollectible"), Vector2.Zero, 1, true, Renderer.AnchorPoint.BottomMiddle);
+            obstaclePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/obstacle"), Vector2.Zero, 1, true, Renderer.AnchorPoint.BottomMiddle);
 
             // background texture and parallaxers
             background = Content.Load<Texture2D>("Graphics/background");
@@ -163,7 +170,7 @@ namespace CavemanRunner
         public void GenerateLevelFromString(string level)
         {
             StringReader reader = new StringReader(level);
-            int[] row = new int[3];
+            int[] row = new int[5];
             int i = 0;
             while(reader.Peek() >= 0)
             {
@@ -177,7 +184,7 @@ namespace CavemanRunner
                 else if(temp == '\n')
                 {
                     pattern.Add(row);
-                    row = new int[3];
+                    row = new int[5];
                     i = 0;
                 }
             }
@@ -204,7 +211,7 @@ namespace CavemanRunner
                 return;
 
             // recalculate touch tolerance
-            currentTolerance = (int)((toleranceAtStartingTempo / 2) * ((float)startingTempo / (float)currentTempo));
+            currentTolerance = (int)((toleranceAtStartingTempo) * ((float)startingTempo / (float)currentTempo));
 
             // update background
             treesBack.Update(gameTime);
@@ -223,7 +230,7 @@ namespace CavemanRunner
                 clickTimes[2] = clickTimes[1] + 60 * 1000 / currentTempo / 4;
                 clickTimes[3] = clickTimes[2] + 60 * 1000 / currentTempo / 4;
                 click.Play();
-                dino.physics.Velocity += Vector2.UnitX * 0.03f;
+                dino.physics.Velocity += Vector2.UnitX * 0.015f;
             }
 
             CheckTapInput(gameTime);
@@ -233,6 +240,9 @@ namespace CavemanRunner
             leftDrum.Update(gameTime);
             rightDrum.Update(gameTime);
             player.Update(gameTime);
+
+            if (player.transform.Position.Y < player.renderer.Texture.Height)
+                player.physics.Velocity *= -0.5f;
             
             dino.Update(gameTime);
             if (dino.transform.Position.X < -dino.collider.Bounds.Width / 4)
@@ -242,8 +252,8 @@ namespace CavemanRunner
             }
 
             float dinoSpeedHelper = 0;
-            dinoSpeedHelper = Math.Max(dino.physics.Velocity.X, -1f);
-            dinoSpeedHelper = Math.Min(dino.physics.Velocity.X, 1f);
+            dinoSpeedHelper = Math.Max(dino.physics.Velocity.X, -0.5f);
+            dinoSpeedHelper = Math.Min(dino.physics.Velocity.X, 0.5f);
             dino.physics.Velocity = Vector2.UnitX * dinoSpeedHelper;
 
             base.Update(gameTime);
@@ -265,8 +275,12 @@ namespace CavemanRunner
                     if(i == 0)
                         newPosition.Y = GraphicsDevice.Viewport.Height * Platform.bottom;
                     else if(i == 1)
-                        newPosition.Y = GraphicsDevice.Viewport.Height * Platform.middle;
+                        newPosition.Y = GraphicsDevice.Viewport.Height * Platform.bottomMiddle;
                     else if(i == 2)
+                        newPosition.Y = GraphicsDevice.Viewport.Height * Platform.middle;
+                    else if (i == 3)
+                        newPosition.Y = GraphicsDevice.Viewport.Height * Platform.topMiddle;
+                    else if (i == 4)
                         newPosition.Y = GraphicsDevice.Viewport.Height * Platform.top;
 
                     GameObject tempPlatform = platformPool.ActivateNewObject();
@@ -301,7 +315,7 @@ namespace CavemanRunner
 
         void CheckDinoCollision ()
         {
-            if (dino.transform.Position.X >= player.transform.Position.X)
+            if (dino.transform.Position.X >= player.transform.Position.X - player.collider.Bounds.Width)
             {
                 dino.transform.Position = new Vector2(-dino.collider.Bounds.Width / 4, Platform.bottom * GraphicsDevice.Viewport.Height);
                 dino.physics.Velocity = Vector2.Zero;
@@ -379,7 +393,7 @@ namespace CavemanRunner
                 if (go.transform.Position.X < 0 - go.renderer.Texture.Width)
                     removePlatforms.Add((Platform)go);
 
-                go.physics.Velocity = Vector2.UnitX * ((-1 * GraphicsDevice.Viewport.Width) / (4 * 60f / (float)currentTempo))
+                go.physics.Velocity = Vector2.UnitX * ((-1 * GraphicsDevice.Viewport.Width) / (8 * 60f / (float)currentTempo))
                     * gameTime.ElapsedGameTime.Milliseconds * 0.001f;
             }
 
@@ -396,7 +410,10 @@ namespace CavemanRunner
                 go.Update(gameTime);
 
                 if (go.transform.Position.X < 0 - go.renderer.Texture.Width)
+                {
                     removeObstacles.Add((Obstacle)go);
+                    go.transform.Parent = null;
+                }
             }
 
             foreach (Obstacle o in removeObstacles)
@@ -410,7 +427,10 @@ namespace CavemanRunner
                 go.Update(gameTime);
                 
                 if (go.transform.Position.X < 0 - go.renderer.Texture.Width)
+                {
                     removeHealthCollectibles.Add((HealthCollectible)go);
+                    go.transform.Parent = null;
+                }
             }
 
             foreach (HealthCollectible h in removeHealthCollectibles)

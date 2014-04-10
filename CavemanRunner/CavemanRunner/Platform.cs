@@ -11,9 +11,11 @@ namespace CavemanRunner
         private static Random r = new Random();
         private Texture2D[] textures;
 
-        public static float bottom = 7 / 9f;
-        public static float middle = 1 / 2f;
-        public static float top = 1 / 4f;
+        public static float bottom = 7 / 8f;
+        public static float bottomMiddle = 6 / 8f;
+        public static float middle = 5 / 8f;
+        public static float topMiddle = 4 / 8f;
+        public static float top = 3 / 8f;
 
         public void Initialize(CavemanRunner game, Texture2D texture, Renderer.AnchorPoint anchor)
         {

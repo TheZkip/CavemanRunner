@@ -69,7 +69,7 @@ namespace CavemanRunner
 
             // update frameTime if the animation is tied to tempo
             if (TieToTempo)
-                frameTime = (int)((float)renderer.gameObject.game.startingTempo / renderer.gameObject.game.currentTempo * originalFrameTime);
+                frameTime = (int)(renderer.gameObject.game.currentTempo * originalFrameTime / (float)renderer.gameObject.game.startingTempo);
             
             // Update the elapsed time
             elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;

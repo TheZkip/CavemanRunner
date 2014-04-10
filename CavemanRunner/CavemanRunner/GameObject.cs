@@ -59,11 +59,9 @@ namespace CavemanRunner
 
             // update transform
             transform.Update();
-            //transform.Position += physics.Velocity;
 
             // set collider to position
             collider.SetPosition(transform.Position);
-            //collider.CheckCollisions();
 
             renderer.Update(gameTime);
         }
