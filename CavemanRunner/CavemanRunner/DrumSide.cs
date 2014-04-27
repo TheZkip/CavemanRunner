@@ -2,6 +2,6 @@
 {
     static class DrumSide
     {
-        public enum side {LEFT, RIGHT};
+        public enum side {LEFT, RIGHT, NONE};
     }
 }

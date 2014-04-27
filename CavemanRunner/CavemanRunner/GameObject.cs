@@ -58,7 +58,7 @@ namespace CavemanRunner
                 physics.Update(gameTime, transform.Position);
 
             // update transform
-            transform.Update();
+            transform.Update(gameTime);
 
             // set collider to position
             collider.SetPosition(transform.Position);

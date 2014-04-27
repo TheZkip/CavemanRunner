@@ -57,9 +57,9 @@ namespace CavemanRunner
         Player player;
         GameObject dino;
         GameState gameState = GameState.InGame;
-        public int currentTempo, startingTempo = 80, maxTempo = 220, currentTolerance, successCounter = 0;
+        public int currentRunningSpeed, startingRunningSpeed = 200, maxRunningSpeed = 280, currentTolerance = 200, successCounter = 0;
         int[] clickTimes = { 0, 0, 0, 0 };
-        float distance;
+        float distance = 0f, timeSinceLastHit = 0f;
         bool hit = false, newPlatforms = false;
 
         // pools
@@ -72,19 +72,26 @@ namespace CavemanRunner
         Pool<Obstacle> obstaclePool;
         List<Obstacle> removeObstacles;
 
+        Pool<GameObject> clubEffectPool;
+        List<GameObject> removeClubEffects;
+
         public CavemanRunner()
         {
-            currentTempo = startingTempo;
-            clickTimes[0] = 0 * 60 * 1000 / currentTempo;
-            clickTimes[1] = 1 * 60 * 1000 / currentTempo;
-            clickTimes[2] = 2 * 60 * 1000 / currentTempo;
-            clickTimes[3] = 3 * 60 * 1000 / currentTempo;
+            currentRunningSpeed = startingRunningSpeed;
+            clickTimes[0] = 0 * 60 * 1000 / currentRunningSpeed;
+            clickTimes[1] = 1 * 60 * 1000 / currentRunningSpeed;
+            clickTimes[2] = 2 * 60 * 1000 / currentRunningSpeed;
+            clickTimes[3] = 3 * 60 * 1000 / currentRunningSpeed;
+
             platformPool = new Pool<Platform>(40);
             healthCollectiblePool = new Pool<HealthCollectible>(10);
             obstaclePool = new Pool<Obstacle>(20);
+            clubEffectPool = new Pool<GameObject>(3);
             removePlatforms = new List<Platform>();
             removeObstacles = new List<Obstacle>();
             removeHealthCollectibles = new List<HealthCollectible>();
+            removeClubEffects = new List<GameObject>();
+
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
@@ -116,19 +123,19 @@ namespace CavemanRunner
             player = new Player();
             player.Initialize(this, Content.Load<Texture2D>("Graphics/caveman"),
                 Vector2.Zero, 100, false, Renderer.AnchorPoint.BottomMiddle);
-            player.collider.SetSize(player.renderer.Texture.Width / 4, player.renderer.Texture.Height);
-            player.renderer.AddAnimation("running", player.renderer.Texture, 75, 75, 4, startingTempo * 2, Color.White,
+            player.collider.SetSize(player.renderer.Texture.Width / 5, (int)(player.renderer.Texture.Height * 0.8f));
+            player.renderer.AddAnimation("running", player.renderer.Texture, 75, 75, 4, startingRunningSpeed * 2, Color.White,
                 player.transform.Scale.X, true, true, true);
             player.transform.Position = new Vector2(graphics.GraphicsDevice.Viewport.Width/4 * scaleToReference, 200 * scaleToReference);
             player.renderer.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
 
             dino = new GameObject();
             dino.Initialize(this, Content.Load<Texture2D>("Graphics/trex"),
-                Vector2.Zero, 1000, false, Renderer.AnchorPoint.BottomMiddle);
+                Vector2.UnitX, 1000, false, Renderer.AnchorPoint.BottomMiddle);
             dino.collider.SetSize(dino.renderer.Texture.Width / 4, dino.renderer.Texture.Height);
-            dino.renderer.AddAnimation("running", dino.renderer.Texture, 436, 300, 4, startingTempo * 2, Color.White,
+            dino.renderer.AddAnimation("running", dino.renderer.Texture, 436, 300, 4, startingRunningSpeed * 2, Color.White,
                 dino.transform.Scale.X, true, true, true);
-            dino.transform.Position = new Vector2(-dino.collider.Bounds.Width / 4, Platform.bottom * GraphicsDevice.Viewport.Height);
+            dino.transform.Position = new Vector2(-dino.collider.Bounds.Width / 2, Platform.bottom * GraphicsDevice.Viewport.Height);
             dino.renderer.SetAnchorPoint(Renderer.AnchorPoint.BottomMiddle);
 
             leftDrum = new Drum();
@@ -147,15 +154,17 @@ namespace CavemanRunner
 
             // init pools for platorms, "club" collectibles and obstacles
             platformPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/grass_fourth"), new Vector2(-1, 0), 1, true, Renderer.AnchorPoint.TopLeft);
-            
+
             for (int i = 0; i < 10; i++)
             {
                 platformPool.ActivateNewObject().transform.Position = new Vector2(platformPool.Objects[0].collider.Bounds.Width * i, GraphicsDevice.Viewport.Height
                     * Platform.bottom);
+                
             }
 
             healthCollectiblePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/scoreCollectible"), Vector2.Zero, 1, true, Renderer.AnchorPoint.BottomMiddle);
-            obstaclePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/obstacle"), Vector2.Zero, 1, true, Renderer.AnchorPoint.BottomMiddle);
+            obstaclePool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/obstacle"), Vector2.Zero, 1, true, Renderer.AnchorPoint.BottomMiddle, 0.8f);
+            //clubEffectPool.InitializeObjects(this, Content.Load<Texture2D>("Graphics/clubEffect"), Vector2.Zero, 1, true, Renderer.AnchorPoint.BottomMiddle);
 
             // background texture and parallaxers
             background = Content.Load<Texture2D>("Graphics/background");
@@ -221,8 +230,8 @@ namespace CavemanRunner
             if (gameState != GameState.InGame)
                 return;
 
-            // recalculate touch tolerance
-            currentTolerance = (int)((toleranceAtStartingTempo) * ((float)startingTempo / (float)currentTempo));
+            //// recalculate touch tolerance
+            //currentTolerance = (int)((toleranceAtStartingTempo) * ((float)startingTempo / (float)currentTempo));
 
             // update background
             treesBack.Update(gameTime);
@@ -232,17 +241,17 @@ namespace CavemanRunner
             CheckObstacleCollision();
             CheckCollectibleCollision();
 
-            int millis = (int)Math.Round(gameTime.TotalGameTime.TotalMilliseconds);
+            //int millis = (int)Math.Round(gameTime.TotalGameTime.TotalMilliseconds);
 
-            if (clickTimes[3] < millis)
-            {
-                clickTimes[0] = Convert.ToInt32(millis);
-                clickTimes[1] = clickTimes[0] + 60 * 1000 / currentTempo / 4;
-                clickTimes[2] = clickTimes[1] + 60 * 1000 / currentTempo / 4;
-                clickTimes[3] = clickTimes[2] + 60 * 1000 / currentTempo / 4;
-                click.Play();
-                dino.physics.Velocity += Vector2.UnitX * 0.015f;
-            }
+            //if (clickTimes[3] < millis)
+            //{
+            //    clickTimes[0] = Convert.ToInt32(millis);
+            //    clickTimes[1] = clickTimes[0] + 60 * 1000 / currentTempo / 4;
+            //    clickTimes[2] = clickTimes[1] + 60 * 1000 / currentTempo / 4;
+            //    clickTimes[3] = clickTimes[2] + 60 * 1000 / currentTempo / 4;
+            //    click.Play();
+            //    dino.physics.Velocity += Vector2.UnitX * 0.015f;
+            //}
 
             CheckTapInput(gameTime);
 
@@ -252,20 +261,22 @@ namespace CavemanRunner
             rightDrum.Update(gameTime);
             player.Update(gameTime);
 
+            // "roof"
             if (player.transform.Position.Y < player.renderer.Texture.Height)
-                player.physics.Velocity *= -0.5f;
-            
+                player.physics.Velocity *= -0.1f;
+
+            dino.physics.Velocity = Vector2.UnitX * ((maxRunningSpeed - currentRunningSpeed) / (float)maxRunningSpeed);
             dino.Update(gameTime);
-            if (dino.transform.Position.X < -dino.collider.Bounds.Width / 4)
+            if (dino.transform.Position.X < -dino.collider.Bounds.Width / 2)
             {
-                dino.transform.Position = new Vector2(-dino.collider.Bounds.Width / 4, Platform.bottom * GraphicsDevice.Viewport.Height);
-                dino.physics.Velocity = Vector2.Zero;
+                dino.transform.Position = new Vector2(-dino.collider.Bounds.Width / 2, Platform.bottom * GraphicsDevice.Viewport.Height);
+                //dino.physics.Velocity = Vector2.Zero;
             }
 
-            float dinoSpeedHelper = 0;
-            dinoSpeedHelper = Math.Max(dino.physics.Velocity.X, -0.5f);
-            dinoSpeedHelper = Math.Min(dino.physics.Velocity.X, 0.5f);
-            dino.physics.Velocity = Vector2.UnitX * dinoSpeedHelper;
+            //float dinoSpeedHelper = 0;
+            //dinoSpeedHelper = Math.Max(dino.physics.Velocity.X, -0.5f);
+            //dinoSpeedHelper = Math.Min(dino.physics.Velocity.X, 0.5f);
+            //dino.physics.Velocity = Vector2.UnitX * dinoSpeedHelper;
 
             base.Update(gameTime);
 
@@ -303,7 +314,7 @@ namespace CavemanRunner
                     {
                         Obstacle tempObstacle = obstaclePool.ActivateNewObject() as Obstacle;
                         tempObstacle.transform.Parent = tempPlatform.transform;
-                        tempObstacle.transform.LocalPosition = new Vector2(tempPlatform.renderer.Texture.Width / 2, -5);
+                        tempObstacle.transform.LocalPosition = new Vector2(tempPlatform.renderer.Texture.Width / 2, 5);
                     }
 
                     // create a collectible if 3
@@ -311,7 +322,7 @@ namespace CavemanRunner
                     {
                         HealthCollectible tempHealth = healthCollectiblePool.ActivateNewObject() as HealthCollectible;
                         tempHealth.transform.Parent = tempPlatform.transform;
-                        tempHealth.transform.LocalPosition = new Vector2(tempPlatform.renderer.Texture.Width / 2, -5);
+                        tempHealth.transform.LocalPosition = new Vector2(tempPlatform.renderer.Texture.Width / 2, 5);
                     }
                 }
             }
@@ -327,10 +338,10 @@ namespace CavemanRunner
 
         void CheckDinoCollision ()
         {
-            if (dino.transform.Position.X >= player.transform.Position.X - player.collider.Bounds.Width)
+            if (dino.transform.Position.X >= player.transform.Position.X - player.collider.Bounds.Width * 2)
             {
-                dino.transform.Position = new Vector2(-dino.collider.Bounds.Width / 4, Platform.bottom * GraphicsDevice.Viewport.Height);
-                dino.physics.Velocity = Vector2.Zero;
+                dino.transform.Position = new Vector2(-dino.collider.Bounds.Width / 2, Platform.bottom * GraphicsDevice.Viewport.Height);
+                //dino.physics.Velocity = Vector2.Zero;
             }
         }
 
@@ -364,18 +375,20 @@ namespace CavemanRunner
             {
                 if (player.collider.CheckCollisions(obstaclePool.Objects[i].collider))
                 {
-                    if (player.HasClub)
-                    {
-                        player.RemoveClub();
-                        obstaclePool.ReleaseObject(obstaclePool.Objects[i]);
+                    //if (player.HasClub)
+                    //{
+                        //player.RemoveClub();
+                    currentRunningSpeed -= 10;
+                    //clubEffectPool.ActivateNewObject().transform.Parent = obstaclePool.Objects[i].transform.Parent;
+                    obstaclePool.ReleaseObject(obstaclePool.Objects[i]);
                         // TODO: play sound effect, visual effect etc
-                    }
-                    else
-                    {
-                        foreach (Platform p in platformPool.Objects)
-                            p.physics.Velocity = Vector2.Zero;
-                        // end game
-                    }
+                    //}
+                    //else
+                    //{
+                    //    foreach (Platform p in platformPool.Objects)
+                    //        p.physics.Velocity = Vector2.Zero;
+                    //    // end game
+                    //}
                 }
             }
         }
@@ -389,7 +402,7 @@ namespace CavemanRunner
                 {
                     (healthCollectiblePool.Objects[i] as HealthCollectible).Collect();
                     healthCollectiblePool.ReleaseObject(healthCollectiblePool.Objects[i]);
-                    player.AddClub();
+                    //player.AddClub();
                     // TODO: play sound effect, visual effect etc
                 }
             }
@@ -405,7 +418,7 @@ namespace CavemanRunner
                 if (go.transform.Position.X < 0 - go.renderer.Texture.Width)
                     removePlatforms.Add((Platform)go);
 
-                go.physics.Velocity = Vector2.UnitX * ((-1 * GraphicsDevice.Viewport.Width) / (8 * 60f / (float)currentTempo))
+                go.physics.Velocity = Vector2.UnitX * ((-1 * GraphicsDevice.Viewport.Width) / (8 * 60f / (float)currentRunningSpeed))
                     * gameTime.ElapsedGameTime.Milliseconds * 0.001f;
             }
 
@@ -475,50 +488,71 @@ namespace CavemanRunner
             // jump on two finger tap
             touches = TouchPanel.GetState();
 
+            // reduce speed if no input has been given in a while
+            timeSinceLastHit += gameTime.ElapsedGameTime.Milliseconds;
+            if (timeSinceLastHit > currentTolerance)
+            {
+                currentRunningSpeed--;
+                timeSinceLastHit = 0f;
+            }
+               
             if (!player.IsGrounded)
+            {
+                previousDrumSide = DrumSide.side.NONE;
                 return;
+            }
 
             if (touches.Count == 1 && touches[0].State == TouchLocationState.Pressed)
             {
-                if (CheckDrumHit(touches, leftDrum))
+                if (CheckDrumHit(touches, leftDrum) && (previousDrumSide != DrumSide.side.LEFT || previousDrumSide == DrumSide.side.NONE))
                 {
                     bongo1.Play();
-                    if (CheckDrumTiming(leftDrum, gameTime))
-                    {
-                        successCounter++;
-                        if (successCounter % 10 == 0)
-                        {
-                            currentTempo += 2;
-                            successCounter = 0;
-                        }
-                        dino.physics.Velocity -= Vector2.UnitX * 0.1f;
-                        previousDrumSide = leftDrum.drumSide;
-                        //player.physics.AddForce(Vector2.UnitX * 2000);
-                    }
-                    else
-                    {
-                        dino.physics.Velocity += Vector2.UnitX * 0.08f;
-                    }
+                    //if (CheckDrumTiming(leftDrum, gameTime))
+                    //{
+                    //    successCounter++;
+                    //    if (successCounter % 10 == 0)
+                    //    {
+                    //        currentTempo += 1;
+                    //        successCounter = 0;
+                    //    }
+                    //    dino.physics.Velocity -= Vector2.UnitX * 0.1f;
+                    //    previousDrumSide = leftDrum.drumSide;
+                    //    //player.physics.AddForce(Vector2.UnitX * 2000);
+                    //}
+                    //else
+                    //{
+                    //    dino.physics.Velocity += Vector2.UnitX * 0.08f;
+                    //}
+
+                    timeSinceLastHit = 0f;
+                    currentRunningSpeed++;
+                    previousDrumSide = leftDrum.drumSide;
+                    dino.transform.Position -= Vector2.UnitX * Math.Max(1, maxRunningSpeed / (currentRunningSpeed));
                 }
-                else if (CheckDrumHit(touches, rightDrum))
+                else if (CheckDrumHit(touches, rightDrum) && (previousDrumSide != DrumSide.side.RIGHT || previousDrumSide == DrumSide.side.NONE))
                 {
                     bongo2.Play();
-                    if (CheckDrumTiming(rightDrum, gameTime))
-                    {
-                        successCounter++;
-                        if(successCounter % 10 == 0)
-                        {
-                            currentTempo += 2;
-                            successCounter = 0;
-                        }
-                        dino.physics.Velocity -= Vector2.UnitX * 0.1f;
-                        previousDrumSide = rightDrum.drumSide;
-                        //player.physics.AddForce(Vector2.UnitX * 2000);
-                    }
-                    else
-                    {
-                        dino.physics.Velocity += Vector2.UnitX * 0.25f;
-                    }
+                    //if (CheckDrumTiming(rightDrum, gameTime))
+                    //{
+                    //    successCounter++;
+                    //    if(successCounter % 10 == 0)
+                    //    {
+                    //        currentTempo += 2;
+                    //        successCounter = 0;
+                    //    }
+                    //    dino.physics.Velocity -= Vector2.UnitX * 0.1f;
+                    //    previousDrumSide = rightDrum.drumSide;
+                    //    //player.physics.AddForce(Vector2.UnitX * 2000);
+                    //}
+                    //else
+                    //{
+                    //    dino.physics.Velocity += Vector2.UnitX * 0.25f;
+                    //}
+
+                    timeSinceLastHit = 0f;
+                    currentRunningSpeed++;
+                    previousDrumSide = rightDrum.drumSide;
+                    dino.transform.Position -= Vector2.UnitX * Math.Max(1, maxRunningSpeed / (currentRunningSpeed));
                 }
             }
             else if (touches.Count == 2 && CheckDrumHit(touches, leftDrum, rightDrum)
@@ -529,8 +563,8 @@ namespace CavemanRunner
             }
 
             // clamp tempo to maxTempo
-            if (currentTempo > maxTempo)
-                currentTempo = maxTempo;
+            if (currentRunningSpeed > maxRunningSpeed)
+                currentRunningSpeed = maxRunningSpeed;
         }
 
         public void PlayBothBongos()
@@ -571,14 +605,14 @@ namespace CavemanRunner
 
             spriteBatch.DrawString(font, "Player: " + player.transform.Position.ToString(),
                     new Vector2(0, 100), Color.Black);
-            spriteBatch.DrawString(font, "Dino: " + dino.transform.Position.ToString(),
+            spriteBatch.DrawString(font, "Dino: " + dino.transform.Position.ToString() + ", " + dino.physics.Velocity.ToString(),
                    new Vector2(0, 120), Color.Black);
-            spriteBatch.DrawString(font, "Current tempo: " + currentTempo.ToString(),
+            spriteBatch.DrawString(font, "Current tempo: " + currentRunningSpeed.ToString(),
                    new Vector2(0, 140), Color.Black);
-            spriteBatch.DrawString(font, "Current tolerance: " + currentTolerance.ToString(),
-                  new Vector2(0, 160), Color.Black);
+            //spriteBatch.DrawString(font, "Current tolerance: " + currentTolerance.ToString(),
+            //      new Vector2(0, 160), Color.Black);
             spriteBatch.DrawString(font, "Current clubs: " + player.CurrentClubs.ToString(),
-                 new Vector2(0, 180), Color.Black);
+                 new Vector2(0, 160), Color.Black);
 
             leftDrum.Draw(gameTime);
             rightDrum.Draw(gameTime);
