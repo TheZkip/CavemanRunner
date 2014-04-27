@@ -60,7 +60,8 @@ namespace CavemanRunner
         Player player;
         GameObject dino;
         GameState gameState = GameState.InGame;
-        public int currentRunningSpeed, startingRunningSpeed = 200, maxRunningSpeed = 280, currentTolerance = 200, successCounter = 0;
+        public int currentRunningSpeed, startingRunningSpeed = 200, maxRunningSpeed = 280, currentTolerance = 200,
+            score = 0, successCounter = 0;
         int[] clickTimes = { 0, 0, 0, 0 };
         float distance = 0f, timeSinceLastHit = 0f;
         bool hit = false, newPlatforms = false;
@@ -344,6 +345,8 @@ namespace CavemanRunner
             if (dino.transform.Position.X >= player.transform.Position.X - player.collider.Bounds.Width * 2)
             {
                 dino.transform.Position = new Vector2(-dino.collider.Bounds.Width / 2, Platform.bottom * GraphicsDevice.Viewport.Height);
+                EndGameEvent(score);
+                score = 0;
                 //dino.physics.Velocity = Vector2.Zero;
             }
         }
@@ -403,6 +406,7 @@ namespace CavemanRunner
             {
                 if (player.collider.CheckCollisions(healthCollectiblePool.Objects[i].collider))
                 {
+                    score += 20;
                     (healthCollectiblePool.Objects[i] as HealthCollectible).Collect();
                     healthCollectiblePool.ReleaseObject(healthCollectiblePool.Objects[i]);
                     //player.AddClub();
@@ -413,17 +417,26 @@ namespace CavemanRunner
 
         void RemoveObjectsOutOfView (GameTime gameTime)
         {
+            int newScore = 0;
             // remove platforms that are out of view
             foreach (GameObject go in platformPool.Objects)
             {
                 go.Update(gameTime);
 
                 if (go.transform.Position.X < 0 - go.renderer.Texture.Width)
+                {
                     removePlatforms.Add((Platform)go);
+                    if(newScore == 0)
+                    {
+                        newScore = 10;
+                    }
+                }
 
                 go.physics.Velocity = Vector2.UnitX * ((-1 * GraphicsDevice.Viewport.Width) / (8 * 60f / (float)currentRunningSpeed))
                     * gameTime.ElapsedGameTime.Milliseconds * 0.001f;
             }
+
+            score += newScore;
 
             CreateNewPlatforms();
 
@@ -593,29 +606,29 @@ namespace CavemanRunner
 
             if (touches.Count == 1)
             {
-                spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 20, Color.Black);
+                //spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 20, Color.Black);
             }
             else if (touches.Count == 2)
             {
-                spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 20, Color.Black);
-                spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 40, Color.Black);
+                //spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 20, Color.Black);
+                //spriteBatch.DrawString(font, touches[0].State.ToString(), Vector2.UnitY * 40, Color.Black);
             }
 
             if(hit)
             {
-                spriteBatch.DrawString(font, "HIT", Vector2.Zero, Color.Black);
+                //spriteBatch.DrawString(font, "HIT", Vector2.Zero, Color.Black);
             }
 
-            spriteBatch.DrawString(font, "Player: " + player.transform.Position.ToString(),
+            spriteBatch.DrawString(font, "Score: " + score,
                     new Vector2(0, 100), Color.Black);
-            spriteBatch.DrawString(font, "Dino: " + dino.transform.Position.ToString() + ", " + dino.physics.Velocity.ToString(),
-                   new Vector2(0, 120), Color.Black);
-            spriteBatch.DrawString(font, "Current tempo: " + currentRunningSpeed.ToString(),
-                   new Vector2(0, 140), Color.Black);
+            //spriteBatch.DrawString(font, "Dino: " + dino.transform.Position.ToString() + ", " + dino.physics.Velocity.ToString(),
+            //       new Vector2(0, 120), Color.Black);
+            //spriteBatch.DrawString(font, "Current tempo: " + currentRunningSpeed.ToString(),
+            //       new Vector2(0, 140), Color.Black);
             //spriteBatch.DrawString(font, "Current tolerance: " + currentTolerance.ToString(),
             //      new Vector2(0, 160), Color.Black);
-            spriteBatch.DrawString(font, "Current clubs: " + player.CurrentClubs.ToString(),
-                 new Vector2(0, 160), Color.Black);
+            //spriteBatch.DrawString(font, "Current clubs: " + player.CurrentClubs.ToString(),
+            //     new Vector2(0, 160), Color.Black);
 
             leftDrum.Draw(gameTime);
             rightDrum.Draw(gameTime);

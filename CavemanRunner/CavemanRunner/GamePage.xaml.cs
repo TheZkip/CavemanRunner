@@ -23,15 +23,29 @@ namespace CavemanRunner
         public GamePage()
         {
             InitializeComponent();
-
-            _game = XamlGame<CavemanRunner>.Create("", this);
-            _game.EndGameEvent += new CavemanRunner.EndGameHandler(EndGame);
-            LoadPattern(new Uri("Patterns/pattern1.txt", UriKind.Relative));
-            LoadPattern(new Uri("Patterns/pattern2.txt", UriKind.Relative));
-            LoadPattern(new Uri("Patterns/pattern3.txt", UriKind.Relative));
-            LoadPattern(new Uri("Patterns/pattern4.txt", UriKind.Relative));
+            InitializeGameObject();
             // Sample code to localize the ApplicationBar
             //BuildLocalizedApplicationBar();
+        }
+
+        private void InitializeGameObject()
+        {
+            if (_game == null)
+            {
+                _game = XamlGame<CavemanRunner>.Create("", this);
+                _game.EndGameEvent += new CavemanRunner.EndGameHandler(EndGame);
+                LoadPattern(new Uri("Patterns/pattern1.txt", UriKind.Relative));
+                LoadPattern(new Uri("Patterns/pattern2.txt", UriKind.Relative));
+                LoadPattern(new Uri("Patterns/pattern3.txt", UriKind.Relative));
+                LoadPattern(new Uri("Patterns/pattern4.txt", UriKind.Relative));
+            }
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            InitializeGameObject();
         }
 
         public void LoadPattern(Uri fileUri)

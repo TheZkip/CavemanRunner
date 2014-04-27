@@ -22,7 +22,16 @@ namespace CavemanRunner
         {
             base.OnNavigatedTo(e);
 
-            var lastPage = this.NavigationService.BackStack.LastOrDefault();
+            JournalEntry lastPage = null;
+
+            try
+            {
+                lastPage = NavigationService.BackStack.First();
+            }
+            catch(Exception ex)
+            {
+
+            }
 
             if (lastPage != null && lastPage.Source.ToString().Contains("GamePage.xaml"))
             {

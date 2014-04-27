@@ -18,8 +18,11 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
+        
+        <TextBlock Grid.Row="0" Text="GAME OVER" HorizontalAlignment="Center" FontSize="72"></TextBlock>
+        
         <!--ContentPanel - place additional content here-->
         <Grid VerticalAlignment="Center" x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <Grid.RowDefinitions>
@@ -29,6 +32,10 @@
             <TextBlock Grid.Row="0" Name="statusTextBlock" Text="NEW HIGH SCORE!" HorizontalAlignment="Center" FontSize="36"></TextBlock>
             <TextBlock Grid.Row="1" Name="youScoredTextBlock" Text="You scored: " HorizontalAlignment="Center" FontSize="36"></TextBlock>
         </Grid>
+        
+        <StackPanel Orientation="Horizontal" Grid.Row="3" HorizontalAlignment="Center">
+            <Button>Play Again!</Button>
+        </StackPanel>
     </Grid>
 
 </phone:PhoneApplicationPage>

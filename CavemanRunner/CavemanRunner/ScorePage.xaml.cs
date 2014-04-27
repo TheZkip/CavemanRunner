@@ -42,12 +42,15 @@ namespace CavemanRunner
                 if(Convert.ToInt32(score) > Convert.ToInt32(highscore))
                 {
                     statusTextBlock.Text = "NEW HIGH SCORE!";
+                    youScoredTextBlock.Text = "";
                     youScoredTextBlock.Text += score;
                     scoreStorage["highscore"] = score;
                 }
                 else
                 {
-                    statusTextBlock.Text = "HIGH SCORE: " + highscore;
+                    statusTextBlock.Text = "HIGH SCORE: ";
+                    statusTextBlock.Text += highscore;
+                    youScoredTextBlock.Text = "You scored: ";
                     youScoredTextBlock.Text += score;
                 }
             }
