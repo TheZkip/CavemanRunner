@@ -17,6 +17,9 @@ namespace CavemanRunner
     /// </summary>
     public class CavemanRunner : Game
     {
+        public delegate void EndGameHandler(int score);
+        public event EndGameHandler EndGameEvent;
+
         public static float toleranceAtStartingTempo = 80;
 
         public float scaleToReference;
@@ -233,6 +236,13 @@ namespace CavemanRunner
             CheckCollectibleCollision();
 
             int millis = (int)Math.Round(gameTime.TotalGameTime.TotalMilliseconds);
+
+            // FOR DEBUGGING GAME ENDING ONLY!
+            if (millis > 10000)
+            {
+                gameState = GameState.EndRun;
+                EndGameEvent(400);
+            }
 
             if (clickTimes[3] < millis)
             {

@@ -25,6 +25,7 @@ namespace CavemanRunner
             InitializeComponent();
 
             _game = XamlGame<CavemanRunner>.Create("", this);
+            _game.EndGameEvent += new CavemanRunner.EndGameHandler(EndGame);
             LoadPattern(new Uri("Patterns/pattern1.txt", UriKind.Relative));
             LoadPattern(new Uri("Patterns/pattern2.txt", UriKind.Relative));
             LoadPattern(new Uri("Patterns/pattern3.txt", UriKind.Relative));
@@ -58,17 +59,7 @@ namespace CavemanRunner
         {
             base.OnBackKeyPress(e);
             _game.PauseGame();
-            MessageBoxResult result = MessageBox.Show("Exit the game?!", "", MessageBoxButton.OKCancel);
-            if(result == MessageBoxResult.OK)
-            {
-                Application.Current.Terminate();
-            } else if(result == MessageBoxResult.Cancel)
-            {
-                _game.UnpauseGame();
-            } else
-            {
-
-            }
+            NavigationService.Navigate(new Uri("/MainMenuPage.xaml", UriKind.Relative));
         }
 
         private void OnLostFocus(object sender, RoutedEventArgs e)
@@ -79,6 +70,14 @@ namespace CavemanRunner
         private void OnGotFocus(object sender, RoutedEventArgs e)
         {
             _game.UnpauseGame();
+        }
+
+        private void EndGame(int score)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                NavigationService.Navigate(new Uri("/ScorePage.xaml?score=" + score, UriKind.Relative));
+            });
         }
     }
 }

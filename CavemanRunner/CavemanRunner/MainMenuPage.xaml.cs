@@ -18,6 +18,27 @@ namespace CavemanRunner
             InitializeComponent();
         }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            var lastPage = this.NavigationService.BackStack.LastOrDefault();
+
+            if (lastPage != null && lastPage.Source.ToString().Contains("GamePage.xaml"))
+            {
+                ResumeButton.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ResumeButton.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void ResumeGame(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/GamePage.xaml", UriKind.Relative));
+        }
+
         private void StartGame(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new Uri("/GamePage.xaml", UriKind.Relative));
