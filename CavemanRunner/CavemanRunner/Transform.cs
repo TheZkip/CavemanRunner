@@ -27,14 +27,14 @@ namespace CavemanRunner
         public float Rotation { get { return rotation; } set { rotation = value; } }
         public Vector2 Scale { get { return scale; } set { scale = value; } }
 
-        public void Update ()
+        public void Update (GameTime gameTime)
         {
             // update transform
             if (parent != null)
                 //position += gameObject.physics.Velocity + parent.gameObject.physics.Velocity;
                 position = parent.Position + localPosition;
             else
-                position += gameObject.physics.Velocity;
+                position += gameObject.physics.Velocity; // *(gameTime.ElapsedGameTime.Milliseconds / 1000);
 
             //position += localPosition;
         }
